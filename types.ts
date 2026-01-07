@@ -1,5 +1,6 @@
 
 export type TaskStatus = 'In Progress' | 'In Review' | 'Completed';
+export type TaskCategory = 'General' | 'Demo' | 'Element' | 'Migration';
 
 export interface EODUpdate {
   date: string;
@@ -15,6 +16,7 @@ export interface Task {
   id: string;
   title: string;
   project: string;
+  category: TaskCategory;
   assignee: string;
   startDate: string;
   targetDate: string;
@@ -27,5 +29,4 @@ export interface Project {
   name: string;
 }
 
-export type TeamMember = 'Akhilesh' | 'Pravallika' | 'Chandu' | 'Sharanya';
-export const TEAM_MEMBERS: TeamMember[] = ['Akhilesh', 'Pravallika', 'Chandu', 'Sharanya'];
+export type TeamMember = string;
