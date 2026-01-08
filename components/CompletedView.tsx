@@ -181,7 +181,7 @@ export const CompletedView: React.FC<CompletedViewProps> = ({ tasks, teamMembers
 
           <div className="relative z-[65]" ref={categoryDropdownRef}>
             <button onClick={() => setIsCategoryDropdownOpen(!isCategoryDropdownOpen)} className="flex items-center gap-3 px-4 py-2.5 bg-white border border-slate-200 rounded-xl hover:border-blue-400 hover:shadow-lg transition-all min-w-[170px] group">
-              <div className="w-8 h-8 rounded-full bg-slate-50 flex items-center justify-center text-slate-400 text-xs font-bold group-hover:bg-blue-50 group-hover:text-blue-500">
+              <div className="w-8 h-8 rounded-full bg-blue-50 flex items-center justify-center text-slate-400 text-xs font-bold group-hover:bg-blue-50 group-hover:text-blue-500">
                 <i className={`fa-solid ${categoryOptions.find(c => c.value === filterCategory)?.icon || 'fa-tag'}`}></i>
               </div>
               <div className="flex-1 text-left">
@@ -296,7 +296,7 @@ export const CompletedView: React.FC<CompletedViewProps> = ({ tasks, teamMembers
                     </div>
                     {!isReadOnly && (
                       <div className="flex gap-3">
-                        <input type="text" placeholder="Add retrospective comment..." className="flex-1 bg-white border border-slate-200 rounded-2xl px-5 py-3 text-sm font-medium focus:ring-2 focus:ring-blue-500/20 outline-none transition-all" value={commentInput[task.id] || ''} onChange={e => setCommentInput({...commentInput, [task.id]: e.target.value})} />
+                        <input type="text" placeholder="Enter" className="flex-1 bg-white border border-slate-200 rounded-2xl px-5 py-3 text-sm font-medium focus:ring-2 focus:ring-blue-500/20 outline-none transition-all" value={commentInput[task.id] || ''} onChange={e => setCommentInput({...commentInput, [task.id]: e.target.value})} />
                         <button onClick={() => { if (!commentInput[task.id]) return; onAddComment(task.id, commentInput[task.id]); setCommentInput({...commentInput, [task.id]: ''}); }} className="bg-slate-900 text-white px-6 py-3 rounded-2xl text-xs font-black uppercase tracking-widest hover:bg-black transition-all shadow-md active:scale-95">Append Note</button>
                       </div>
                     )}

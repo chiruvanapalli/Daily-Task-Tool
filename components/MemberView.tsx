@@ -6,9 +6,10 @@ interface MemberViewProps {
   tasks: Task[];
   teamMembers: TeamMember[];
   onAddUpdate: (taskId: string, update: EODUpdate) => void;
+  showToast: (message: string, type: 'success' | 'error' | 'info') => void;
 }
 
-export const MemberView: React.FC<MemberViewProps> = ({ tasks, teamMembers, onAddUpdate }) => {
+export const MemberView: React.FC<MemberViewProps> = ({ tasks, teamMembers, onAddUpdate, showToast }) => {
   const [selectedUser, setSelectedUser] = useState<TeamMember>(teamMembers[0] || '');
   const [activeTask, setActiveTask] = useState<string | null>(null);
   const [isUserDropdownOpen, setIsUserDropdownOpen] = useState(false);
@@ -49,12 +50,12 @@ export const MemberView: React.FC<MemberViewProps> = ({ tasks, teamMembers, onAd
     const lastProgress = task?.updates.length ? task.updates[task.updates.length - 1].progress : 0;
 
     if (updateForm.progress < lastProgress) {
-      alert("Error: Progress cannot decrease!");
+      showToast("Error: Progress cannot decrease!", "error");
       return;
     }
 
     if (updateForm.status === 'Completed' && updateForm.progress < 100) {
-      alert("Error: Status cannot be 'Completed' if progress is less than 100%");
+      showToast("Error: Complete status requires 100% progress", "error");
       return;
     }
 
@@ -72,7 +73,6 @@ export const MemberView: React.FC<MemberViewProps> = ({ tasks, teamMembers, onAd
       expectedCompletionDate: ''
     });
     setActiveTask(null);
-    alert("EOD Update submitted!");
   };
 
   const statusOptions: { value: TaskStatus; icon: string; color: string }[] = [
@@ -86,7 +86,7 @@ export const MemberView: React.FC<MemberViewProps> = ({ tasks, teamMembers, onAd
       <header className="mb-10 flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
         <div>
           <h2 className="text-3xl font-black text-slate-900 tracking-tight">Member Portal</h2>
-          <p className="text-slate-500 font-medium italic">Submit your mandatory daily status updates</p>
+          <p className="text-slate-500 font-medium italic">Daily status report</p>
         </div>
 
         <div className="relative z-[100]" ref={userDropdownRef}>
@@ -98,10 +98,10 @@ export const MemberView: React.FC<MemberViewProps> = ({ tasks, teamMembers, onAd
               {selectedUser ? selectedUser.charAt(0) : '?'}
             </div>
             <div className="flex-1 text-left">
-              <p className="text-[9px] font-black uppercase text-slate-400 leading-none mb-0.5">Logged in as</p>
+              <p className="text-[9px] font-black uppercase text-slate-400 leading-none mb-0.5">User</p>
               <p className="text-sm font-black text-slate-800 truncate">{selectedUser || 'Select User'}</p>
             </div>
-            <i className={`fa-solid fa-chevron-down text-[10px] text-slate-400 transition-transform duration-300 ${isUserDropdownOpen ? 'rotate-180 text-blue-500' : ''}`}></i>
+            <i className={`fa-solid fa-chevron-down text-[10px] text-slate-400 transition-transform duration-300 ${isUserDropdownOpen ? 'rotate-180' : ''}`}></i>
           </button>
 
           {isUserDropdownOpen && (
@@ -128,11 +128,11 @@ export const MemberView: React.FC<MemberViewProps> = ({ tasks, teamMembers, onAd
 
       <div className="grid grid-cols-1 lg:grid-cols-5 gap-8">
         <section className="lg:col-span-2 space-y-4">
-          <h3 className="text-[10px] font-black text-slate-400 uppercase tracking-widest px-1">Your Active Tracks</h3>
+          <h3 className="text-[10px] font-black text-slate-400 uppercase tracking-widest px-1">Your Tasks</h3>
           {myTasks.length === 0 ? (
             <div className="bg-white p-8 rounded-3xl border border-slate-200 text-center">
                <i className="fa-solid fa-mug-hot text-slate-200 text-2xl mb-3"></i>
-               <p className="text-slate-400 text-sm italic font-medium">No tasks assigned to you.</p>
+               <p className="text-slate-400 text-sm italic font-medium">No tasks assigned.</p>
             </div>
           ) : (
             myTasks.map(t => (
@@ -164,11 +164,11 @@ export const MemberView: React.FC<MemberViewProps> = ({ tasks, teamMembers, onAd
           {activeTask ? (
             <form onSubmit={handleSubmit} className="bg-white p-8 rounded-3xl border border-slate-200 shadow-xl shadow-slate-200/50 space-y-6 relative overflow-hidden">
               <div className="absolute top-0 left-0 w-full h-1.5 bg-blue-500"></div>
-              <h3 className="text-xl font-black text-slate-900 mb-2">EOD Status Report</h3>
+              <h3 className="text-xl font-black text-slate-900 mb-2">EOD Report</h3>
               
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div className="relative" ref={statusDropdownRef}>
-                  <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">Current Status</label>
+                  <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">Status</label>
                   <button 
                     type="button"
                     onClick={() => setIsStatusDropdownOpen(!isStatusDropdownOpen)}
@@ -194,7 +194,6 @@ export const MemberView: React.FC<MemberViewProps> = ({ tasks, teamMembers, onAd
                             <i className={`fa-solid ${option.icon} opacity-50`}></i>
                             {option.value}
                           </span>
-                          {updateForm.status === option.value && <i className="fa-solid fa-check text-[10px]"></i>}
                         </button>
                       ))}
                     </div>
@@ -214,10 +213,10 @@ export const MemberView: React.FC<MemberViewProps> = ({ tasks, teamMembers, onAd
               </div>
 
               <div>
-                <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">What did you achieve today?</label>
+                <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">Work Completed</label>
                 <textarea 
                   className="w-full bg-slate-50 border border-slate-200 rounded-xl p-4 text-sm font-medium focus:ring-2 focus:ring-blue-500/20 outline-none h-28 leading-relaxed"
-                  placeholder="Detailed breakdown of work completed..."
+                  placeholder="Enter"
                   value={updateForm.workCompleted}
                   onChange={e => setUpdateForm({...updateForm, workCompleted: e.target.value})}
                   required
@@ -228,7 +227,7 @@ export const MemberView: React.FC<MemberViewProps> = ({ tasks, teamMembers, onAd
                 <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">Pending Items</label>
                 <textarea 
                   className="w-full bg-slate-50 border border-slate-200 rounded-xl p-4 text-sm font-medium focus:ring-2 focus:ring-blue-500/20 outline-none h-20 leading-relaxed"
-                  placeholder="Tasks to pick up next..."
+                  placeholder="Enter"
                   value={updateForm.pendingItems}
                   onChange={e => setUpdateForm({...updateForm, pendingItems: e.target.value})}
                   required
@@ -236,26 +235,24 @@ export const MemberView: React.FC<MemberViewProps> = ({ tasks, teamMembers, onAd
               </div>
 
               <div>
-                <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">Any Blockers or Dependencies?</label>
+                <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">Blockers</label>
                 <textarea 
                   className="w-full bg-slate-50 border border-slate-200 rounded-xl p-4 text-sm font-medium focus:ring-2 focus:ring-red-500/20 outline-none h-24 leading-relaxed border-l-4 border-l-red-100"
-                  placeholder="Describe technical debt, dependencies from other teams, or roadblocks..."
+                  placeholder="Enter"
                   value={updateForm.blockers}
                   onChange={e => setUpdateForm({...updateForm, blockers: e.target.value})}
                 />
               </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div className="md:col-span-2">
-                  <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">Revised Delivery Date</label>
-                  <input 
-                    type="date" 
-                    className="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 text-sm font-bold text-slate-700 focus:ring-2 focus:ring-blue-500/20 outline-none"
-                    value={updateForm.expectedCompletionDate}
-                    onChange={e => setUpdateForm({...updateForm, expectedCompletionDate: e.target.value})}
-                    required
-                  />
-                </div>
+              <div>
+                <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">Expected Completion</label>
+                <input 
+                  type="date" 
+                  className="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 text-sm font-bold text-slate-700 focus:ring-2 focus:ring-blue-500/20 outline-none"
+                  value={updateForm.expectedCompletionDate}
+                  onChange={e => setUpdateForm({...updateForm, expectedCompletionDate: e.target.value})}
+                  required
+                />
               </div>
 
               <button 
@@ -263,13 +260,13 @@ export const MemberView: React.FC<MemberViewProps> = ({ tasks, teamMembers, onAd
                 className="w-full bg-slate-900 text-white font-black uppercase tracking-widest py-4 rounded-2xl hover:bg-black transition-all shadow-xl active:scale-95 flex items-center justify-center gap-3"
               >
                 <i className="fa-solid fa-cloud-upload"></i>
-                Submit EOD Update
+                Submit EOD Report
               </button>
             </form>
           ) : (
             <div className="h-full min-h-[400px] flex flex-col items-center justify-center p-12 border-2 border-dashed border-slate-200 rounded-3xl text-slate-400 text-center">
               <i className="fa-solid fa-arrow-left text-3xl mb-4 opacity-20"></i>
-              <p className="italic font-medium">Select an active track from the left to start your daily status report.</p>
+              <p className="italic font-medium">Select a task to report status.</p>
             </div>
           )}
         </section>

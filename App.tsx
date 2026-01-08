@@ -1,5 +1,5 @@
 
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { Dashboard } from './components/Dashboard';
 import { MemberView } from './components/MemberView';
 import { LeadView } from './components/LeadView';
@@ -35,6 +35,13 @@ const INITIAL_TASKS: Task[] = [
 ];
 
 type UserRole = 'private' | 'public' | null;
+type ToastType = 'success' | 'error' | 'info';
+
+interface Toast {
+  id: string;
+  message: string;
+  type: ToastType;
+}
 
 const App: React.FC = () => {
   const [view, setView] = useState<'dashboard' | 'lead' | 'member' | 'completed' | 'team'>('dashboard');
@@ -44,8 +51,17 @@ const App: React.FC = () => {
   });
   const [passcode, setPasscode] = useState('');
   const [isVerifying, setIsVerifying] = useState(false);
+  const [toasts, setToasts] = useState<Toast[]>([]);
   const fileInputRef = useRef<HTMLInputElement>(null);
   
+  const showToast = useCallback((message: string, type: ToastType = 'info') => {
+    const id = Math.random().toString(36).substr(2, 9);
+    setToasts(prev => [...prev, { id, message, type }]);
+    setTimeout(() => {
+      setToasts(prev => prev.filter(t => t.id !== id));
+    }, 4000);
+  }, []);
+
   const [teamMembers, setTeamMembers] = useState<TeamMember[]>(() => {
     const saved = localStorage.getItem('workspace_team_v1');
     return saved ? JSON.parse(saved) : INITIAL_MEMBERS;
@@ -85,11 +101,13 @@ const App: React.FC = () => {
       if (passcode === 'admin123') {
         setRole('private');
         setView('dashboard');
+        showToast("Authenticated as Lead", "success");
       } else if (passcode === 'team2024') {
         setRole('public');
         setView('dashboard');
+        showToast("Authenticated as Member", "success");
       } else {
-        alert("Invalid Passcode. Hint: admin123 for Private, team2024 for Public.");
+        showToast("Invalid Passcode.", "error");
       }
       setIsVerifying(false);
     }, 400);
@@ -101,18 +119,23 @@ const App: React.FC = () => {
       setPasscode('');
       setView('dashboard');
       localStorage.removeItem('workspace_role');
+      showToast("Logged out successfully", "info");
     }
   };
 
-  const addTask = (task: Task) => setTasks(prev => [...prev, task]);
+  const addTask = (task: Task) => {
+    setTasks(prev => [...prev, task]);
+    showToast("Task assigned successfully", "success");
+  };
   
   const deleteTask = (taskId: string) => {
     if (role !== 'private') {
-      alert("Unauthorized: Only Lead access can delete tasks.");
+      showToast("Unauthorized action", "error");
       return;
     }
-    if (window.confirm("Are you sure you want to delete this task? This action cannot be undone.")) {
+    if (window.confirm("Are you sure you want to delete this task?")) {
       setTasks(prev => prev.filter(t => t.id !== taskId));
+      showToast("Task deleted", "info");
     }
   };
 
@@ -123,11 +146,12 @@ const App: React.FC = () => {
       }
       return t;
     }));
+    showToast("EOD update submitted", "success");
   };
 
   const addComment = (taskId: string, comment: string) => {
     if (role !== 'private') {
-      alert("Unauthorized: Only Lead access can post directives.");
+      showToast("Unauthorized action", "error");
       return;
     }
     setTasks(prev => prev.map(t => {
@@ -136,29 +160,37 @@ const App: React.FC = () => {
       }
       return t;
     }));
+    showToast("Directive posted", "success");
   };
 
   const handleUpdateHealth = (taskId: string, health: HealthStatus) => {
     if (role !== 'private') return;
     setTasks(prev => prev.map(t => t.id === taskId ? { ...t, healthStatus: health } : t));
+    showToast(`Health updated to ${health}`, "info");
   };
 
-  const addMember = (name: string) => setTeamMembers(prev => [...prev, name]);
+  const addMember = (name: string) => {
+    setTeamMembers(prev => [...prev, name]);
+    showToast(`${name} added to team`, "success");
+  };
+
   const removeMember = (name: string) => {
-    if (window.confirm(`Remove ${name} from the team roster?`)) {
+    if (window.confirm(`Remove ${name}?`)) {
       setTeamMembers(prev => prev.filter(m => m !== name));
+      showToast("Member removed", "info");
     }
   };
 
   const exportToJSON = () => {
     const dataStr = JSON.stringify({ tasks, teamMembers }, null, 2);
     const dataUri = 'data:application/json;charset=utf-8,'+ encodeURIComponent(dataStr);
-    const exportFileDefaultName = `workspace_full_backup_${new Date().toISOString().split('T')[0]}.json`;
+    const exportFileDefaultName = `workspace_backup_${new Date().toISOString().split('T')[0]}.json`;
 
     const linkElement = document.createElement('a');
     linkElement.setAttribute('href', dataUri);
     linkElement.setAttribute('download', exportFileDefaultName);
     linkElement.click();
+    showToast("Full backup exported", "success");
   };
 
   const importJSON = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -175,9 +207,9 @@ const App: React.FC = () => {
         } else if (Array.isArray(json)) {
           setTasks(json);
         }
-        alert("Data imported successfully!");
+        showToast("Imported successfully!", "success");
       } catch (err) {
-        alert("Error parsing JSON file.");
+        showToast("Error parsing file.", "error");
       }
     };
     reader.readAsText(file);
@@ -207,11 +239,46 @@ const App: React.FC = () => {
     const url = URL.createObjectURL(blob);
     const link = document.createElement('a');
     link.setAttribute('href', url);
-    link.setAttribute('download', `workspace_report_${new Date().toISOString().split('T')[0]}.csv`);
+    link.setAttribute('download', `report_${new Date().toISOString().split('T')[0]}.csv`);
     link.click();
+    showToast("CSV report generated", "success");
   };
 
   const activeTasks = tasks.filter(t => t.updates[t.updates.length - 1]?.status !== 'Completed');
+
+  const renderToasts = () => (
+    <div className="fixed bottom-8 right-8 z-[9999] flex flex-col gap-3 pointer-events-none">
+      {toasts.map(toast => (
+        <div 
+          key={toast.id} 
+          className={`pointer-events-auto min-w-[320px] px-6 py-4 rounded-2xl shadow-2xl border flex items-center gap-4 transition-all duration-500 transform animate-in slide-in-from-right-full fade-in zoom-in-95 ${
+            toast.type === 'success' ? 'bg-emerald-50 border-emerald-100 text-emerald-900' :
+            toast.type === 'error' ? 'bg-red-50 border-red-100 text-red-900' :
+            'bg-slate-900 border-slate-800 text-white'
+          }`}
+        >
+          <div className={`w-9 h-9 rounded-full flex items-center justify-center text-sm shrink-0 shadow-inner ${
+            toast.type === 'success' ? 'bg-emerald-500/20 text-emerald-600' :
+            toast.type === 'error' ? 'bg-red-500/20 text-red-600' :
+            'bg-white/10 text-white'
+          }`}>
+            <i className={`fa-solid ${
+              toast.type === 'success' ? 'fa-circle-check' :
+              toast.type === 'error' ? 'fa-circle-exclamation' :
+              'fa-circle-info'
+            }`}></i>
+          </div>
+          <p className="font-bold text-sm flex-1 leading-snug">{toast.message}</p>
+          <button 
+            onClick={() => setToasts(prev => prev.filter(t => t.id !== toast.id))} 
+            className="w-6 h-6 rounded-full flex items-center justify-center hover:bg-black/5 opacity-40 hover:opacity-100 transition-all shrink-0"
+          >
+            <i className="fa-solid fa-xmark text-[10px]"></i>
+          </button>
+        </div>
+      ))}
+    </div>
+  );
 
   if (!role) {
     return (
@@ -220,15 +287,15 @@ const App: React.FC = () => {
           <div className="flex flex-col items-center mb-10">
             <div className="w-16 h-16 bg-gradient-to-br from-blue-400 to-blue-600 rounded-2xl flex items-center justify-center text-3xl font-black text-white shadow-2xl shadow-blue-500/20 mb-4">WS</div>
             <h1 className="text-3xl font-black text-white tracking-tight">Work Space</h1>
-            <p className="text-slate-400 font-medium italic mt-1">High-Performance Task Tracker</p>
+            <p className="text-slate-400 font-medium italic mt-1">Task Tracker</p>
           </div>
           
           <form onSubmit={handleLogin} className="bg-white p-10 rounded-[2.5rem] shadow-2xl space-y-8">
             <div>
-              <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-3">Portal Access Key</label>
+              <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-3">Enter Passcode</label>
               <input 
                 type="password" 
-                placeholder="••••••••" 
+                placeholder="Enter" 
                 className="w-full bg-slate-50 border border-slate-200 rounded-2xl px-6 py-5 outline-none font-bold text-slate-800 text-center tracking-widest focus:ring-4 focus:ring-blue-500/10 focus:border-blue-400 transition-all text-xl"
                 value={passcode}
                 onChange={(e) => setPasscode(e.target.value)}
@@ -239,49 +306,26 @@ const App: React.FC = () => {
             <button 
               type="submit" 
               disabled={isVerifying}
-              className={`w-full bg-slate-900 text-white font-black uppercase tracking-widest py-5 rounded-2xl shadow-xl transition-all flex items-center justify-center gap-3 active:scale-95 ${isVerifying ? 'opacity-50 cursor-not-allowed' : 'hover:bg-black hover:shadow-slate-200'}`}
+              className={`w-full bg-slate-900 text-white font-black uppercase tracking-widest py-5 rounded-2xl shadow-xl transition-all flex items-center justify-center gap-3 active:scale-95 ${isVerifying ? 'opacity-50 cursor-not-allowed' : 'hover:bg-black'}`}
             >
-              {isVerifying ? (
-                <>
-                  <i className="fa-solid fa-circle-notch animate-spin"></i>
-                  Authenticating...
-                </>
-              ) : (
-                <>
-                  <i className="fa-solid fa-shield-halved"></i>
-                  Unlock Workspace
-                </>
-              )}
+              {isVerifying ? 'Verifying...' : 'Unlock Workspace'}
             </button>
-
-            <div className="pt-6 border-t border-slate-100 flex flex-col gap-2">
-              <p className="text-center text-[10px] font-black text-slate-400 uppercase tracking-widest">Access Tiers</p>
-              <div className="flex justify-center gap-6">
-                 <div className="text-center">
-                    <p className="text-[9px] font-black text-blue-500 uppercase">Private</p>
-                    <p className="text-[10px] text-slate-300 font-mono">admin123</p>
-                 </div>
-                 <div className="text-center">
-                    <p className="text-[9px] font-black text-emerald-500 uppercase">Public</p>
-                    <p className="text-[10px] text-slate-300 font-mono">team2024</p>
-                 </div>
-              </div>
-            </div>
           </form>
         </div>
+        {renderToasts()}
       </div>
     );
   }
 
   return (
-    <div className="flex flex-col md:flex-row min-h-screen bg-gray-50 font-sans text-slate-900 antialiased">
+    <div className="flex flex-col md:flex-row min-h-screen bg-gray-50 font-sans text-slate-900 antialiased relative">
       <aside className="w-full md:w-64 bg-slate-900 text-white p-6 flex flex-col shadow-2xl z-20 max-h-screen overflow-y-auto">
         <div className="flex items-center gap-3 mb-10">
           <div className="w-10 h-10 bg-gradient-to-br from-blue-400 to-blue-600 rounded-xl flex items-center justify-center text-xl font-black shadow-lg shadow-blue-500/20">WS</div>
           <div>
             <h1 className="text-xl font-bold tracking-tight">Work Space</h1>
             <div className={`text-[8px] font-black uppercase tracking-[0.15em] px-1.5 py-0.5 rounded inline-block ${role === 'private' ? 'bg-indigo-500/20 text-indigo-300' : 'bg-emerald-500/20 text-emerald-300'}`}>
-              {role === 'private' ? 'Command/Lead' : 'Public/Member'}
+              {role === 'private' ? 'Lead' : 'Member'}
             </div>
           </div>
         </div>
@@ -333,23 +377,17 @@ const App: React.FC = () => {
               <i className="fa-solid fa-layer-group"></i>
               <span className="font-semibold text-sm">Tasks</span>
             </div>
-            {tasks.length > 0 && (
-              <span className="bg-white/20 text-[10px] font-bold px-2 py-0.5 rounded-full">{tasks.length}</span>
-            )}
           </button>
 
           {role === 'private' && (
             <div className="pt-6 mt-6 border-t border-slate-800 space-y-4">
-              <h4 className="px-4 text-[10px] font-black uppercase text-slate-500 tracking-widest">Storage & Export</h4>
-              
               <button 
                 onClick={exportToJSON}
                 className="w-full flex items-center gap-3 px-4 py-2 text-xs font-bold text-slate-300 hover:text-white hover:bg-slate-800 rounded-lg transition-all"
               >
                 <i className="fa-solid fa-file-export text-blue-400"></i>
-                Save Full Backup
+                Export Backup
               </button>
-
               <button 
                 onClick={() => fileInputRef.current?.click()}
                 className="w-full flex items-center gap-3 px-4 py-2 text-xs font-bold text-slate-300 hover:text-white hover:bg-slate-800 rounded-lg transition-all"
@@ -358,13 +396,12 @@ const App: React.FC = () => {
                 Import JSON
               </button>
               <input type="file" ref={fileInputRef} onChange={importJSON} accept=".json" className="hidden" />
-
               <button 
                 onClick={exportToExcel}
                 className="w-full flex items-center gap-3 px-4 py-2 text-xs font-bold text-slate-300 hover:text-white hover:bg-slate-800 rounded-lg transition-all"
               >
                 <i className="fa-solid fa-file-excel text-emerald-400"></i>
-                Excel (CSV)
+                Export CSV
               </button>
             </div>
           )}
@@ -375,23 +412,21 @@ const App: React.FC = () => {
             onClick={handleLogout}
             className="w-full flex items-center gap-3 px-4 py-3 text-slate-500 hover:text-red-400 hover:bg-red-400/10 rounded-xl transition-all group"
           >
-            <i className="fa-solid fa-right-from-bracket group-hover:translate-x-1 transition-transform"></i>
-            <span className="font-bold text-xs uppercase tracking-widest">Logout Session</span>
+            <i className="fa-solid fa-right-from-bracket"></i>
+            <span className="font-bold text-xs uppercase tracking-widest">Logout</span>
           </button>
-          <div className="mt-4 flex items-center gap-2 text-[9px] text-slate-600 font-medium px-4">
-            <span className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse"></span>
-            <span>Live Local Sync</span>
-          </div>
         </div>
       </aside>
 
       <main className="flex-1 h-screen overflow-y-auto p-4 md:p-8 bg-[#f8fafc]">
         {view === 'dashboard' && <Dashboard tasks={activeTasks} teamMembers={teamMembers} onAddComment={addComment} onDeleteTask={deleteTask} onUpdateHealth={handleUpdateHealth} isReadOnly={role !== 'private'} />}
-        {view === 'lead' && role === 'private' && <LeadView teamMembers={teamMembers} onAddTask={addTask} />}
-        {view === 'team' && role === 'private' && <TeamView teamMembers={teamMembers} onAddMember={addMember} onRemoveMember={removeMember} />}
-        {view === 'member' && <MemberView tasks={tasks} teamMembers={teamMembers} onAddUpdate={addUpdate} />}
+        {view === 'lead' && role === 'private' && <LeadView teamMembers={teamMembers} onAddTask={addTask} showToast={showToast} />}
+        {view === 'team' && role === 'private' && <TeamView teamMembers={teamMembers} onAddMember={addMember} onRemoveMember={removeMember} showToast={showToast} />}
+        {view === 'member' && <MemberView tasks={tasks} teamMembers={teamMembers} onAddUpdate={addUpdate} showToast={showToast} />}
         {view === 'completed' && <CompletedView tasks={tasks} teamMembers={teamMembers} onAddComment={addComment} onDeleteTask={deleteTask} isReadOnly={role !== 'private'} />}
       </main>
+
+      {renderToasts()}
     </div>
   );
 };

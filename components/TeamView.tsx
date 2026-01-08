@@ -6,9 +6,10 @@ interface TeamViewProps {
   teamMembers: TeamMember[];
   onAddMember: (name: string) => void;
   onRemoveMember: (name: string) => void;
+  showToast: (message: string, type: 'success' | 'error' | 'info') => void;
 }
 
-export const TeamView: React.FC<TeamViewProps> = ({ teamMembers, onAddMember, onRemoveMember }) => {
+export const TeamView: React.FC<TeamViewProps> = ({ teamMembers, onAddMember, onRemoveMember, showToast }) => {
   const [newName, setNewName] = useState('');
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -16,7 +17,7 @@ export const TeamView: React.FC<TeamViewProps> = ({ teamMembers, onAddMember, on
     const trimmed = newName.trim();
     if (!trimmed) return;
     if (teamMembers.includes(trimmed)) {
-      alert("Member already exists!");
+      showToast("Member already exists in roster!", "error");
       return;
     }
     onAddMember(trimmed);
@@ -27,16 +28,16 @@ export const TeamView: React.FC<TeamViewProps> = ({ teamMembers, onAddMember, on
     <div className="max-w-2xl mx-auto animate-in fade-in slide-in-from-bottom-4 duration-500">
       <header className="mb-8">
         <h2 className="text-3xl font-black text-slate-900 tracking-tight">Team Management</h2>
-        <p className="text-slate-500 font-medium italic">Expand your roster and manage access</p>
+        <p className="text-slate-500 font-medium italic">Manage roster</p>
       </header>
 
       <div className="space-y-6">
         <form onSubmit={handleSubmit} className="bg-white p-8 rounded-3xl shadow-xl shadow-slate-200/50 border border-slate-200">
-          <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-3">Add New Member</label>
+          <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-3">Add Member</label>
           <div className="flex gap-4">
             <input 
               type="text" 
-              placeholder="Enter full name..." 
+              placeholder="Enter" 
               className="flex-1 bg-slate-50 border border-slate-200 rounded-2xl px-5 py-4 outline-none font-bold text-slate-800 focus:ring-2 focus:ring-blue-500/20 transition-all"
               value={newName}
               onChange={(e) => setNewName(e.target.value)}

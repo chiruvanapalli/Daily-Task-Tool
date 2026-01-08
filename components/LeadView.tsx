@@ -5,9 +5,10 @@ import { Task, TeamMember, TaskCategory } from '../types';
 interface LeadViewProps {
   teamMembers: TeamMember[];
   onAddTask: (task: Task) => void;
+  showToast: (message: string, type: 'success' | 'error' | 'info') => void;
 }
 
-export const LeadView: React.FC<LeadViewProps> = ({ teamMembers, onAddTask }) => {
+export const LeadView: React.FC<LeadViewProps> = ({ teamMembers, onAddTask, showToast }) => {
   const [formData, setFormData] = useState({
     title: '',
     project: '',
@@ -33,7 +34,7 @@ export const LeadView: React.FC<LeadViewProps> = ({ teamMembers, onAddTask }) =>
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!formData.title || !formData.targetDate || !formData.assignee) {
-      alert("Please ensure all fields including Assignee are selected.");
+      showToast("Ensure all fields are filled.", "error");
       return;
     }
 
@@ -54,7 +55,6 @@ export const LeadView: React.FC<LeadViewProps> = ({ teamMembers, onAddTask }) =>
       startDate: new Date().toISOString().split('T')[0],
       targetDate: ''
     });
-    alert('Task assigned successfully!');
   };
 
   const categories: { value: TaskCategory; icon: string; desc: string }[] = [
@@ -68,7 +68,7 @@ export const LeadView: React.FC<LeadViewProps> = ({ teamMembers, onAddTask }) =>
     <div className="max-w-2xl mx-auto">
       <header className="mb-8">
         <h2 className="text-3xl font-black text-slate-900 tracking-tight">Assign Task</h2>
-        <p className="text-slate-500 font-medium italic">Define workstreams and set delivery expectations</p>
+        <p className="text-slate-500 font-medium italic">Define workstreams</p>
       </header>
 
       <form onSubmit={handleSubmit} className="bg-white p-10 rounded-3xl shadow-xl shadow-slate-200/50 border border-slate-200 space-y-8">
@@ -77,7 +77,7 @@ export const LeadView: React.FC<LeadViewProps> = ({ teamMembers, onAddTask }) =>
             <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">Project Entity</label>
             <input 
               type="text" 
-              placeholder="e.g., Q3 UI Refresh"
+              placeholder="Enter"
               className="w-full bg-slate-50 border border-slate-200 rounded-2xl px-5 py-4 outline-none font-bold text-slate-800 focus:ring-2 focus:ring-blue-500/20 transition-all"
               value={formData.project}
               onChange={e => setFormData({...formData, project: e.target.value})}
@@ -88,7 +88,7 @@ export const LeadView: React.FC<LeadViewProps> = ({ teamMembers, onAddTask }) =>
             <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">Sprint / Milestone</label>
             <input 
               type="text" 
-              placeholder="e.g., Sprint 1 or v1.0"
+              placeholder="Enter"
               className="w-full bg-slate-50 border border-slate-200 rounded-2xl px-5 py-4 outline-none font-bold text-slate-800 focus:ring-2 focus:ring-blue-500/20 transition-all"
               value={formData.sprint}
               onChange={e => setFormData({...formData, sprint: e.target.value})}
@@ -97,7 +97,7 @@ export const LeadView: React.FC<LeadViewProps> = ({ teamMembers, onAddTask }) =>
         </div>
 
         <div>
-           <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">Category / Template</label>
+           <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">Category</label>
             <div className="grid grid-cols-2 gap-2">
               {categories.map(cat => (
                 <button
@@ -114,10 +114,10 @@ export const LeadView: React.FC<LeadViewProps> = ({ teamMembers, onAddTask }) =>
         </div>
 
         <div>
-          <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">Tracking Title</label>
+          <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">Task Title</label>
           <input 
             type="text" 
-            placeholder="e.g., Integrate Auth Components"
+            placeholder="Enter"
             className="w-full bg-slate-50 border border-slate-200 rounded-2xl px-5 py-4 outline-none font-bold text-slate-800 focus:ring-2 focus:ring-blue-500/20 transition-all"
             value={formData.title}
             onChange={e => setFormData({...formData, title: e.target.value})}
@@ -175,7 +175,7 @@ export const LeadView: React.FC<LeadViewProps> = ({ teamMembers, onAddTask }) =>
         </div>
 
         <div>
-          <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">Baseline Deadline</label>
+          <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">Deadline</label>
           <input 
             type="date" 
             className="w-full bg-slate-50 border border-slate-200 rounded-2xl px-5 py-4 outline-none font-bold text-slate-700 focus:ring-2 focus:ring-blue-500/20 transition-all"

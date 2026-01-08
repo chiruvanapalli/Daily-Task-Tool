@@ -75,14 +75,11 @@ export const Dashboard: React.FC<DashboardProps> = ({ tasks, teamMembers, onAddC
           <p className="text-slate-500 font-medium italic">Monitoring {tasks.length} active workstreams</p>
         </div>
         <div className="flex flex-wrap items-center gap-6">
-          <div className="flex gap-5 px-2">
-             <span className="text-[10px] font-black uppercase tracking-widest text-slate-400">Manual Health Control Enabled</span>
-          </div>
           <div className="relative z-[60]" ref={dropdownRef}>
             <button onClick={() => setIsDropdownOpen(!isDropdownOpen)} className="flex items-center gap-3 px-4 py-2 bg-white border border-slate-200 rounded-xl hover:border-blue-400 transition-all min-w-[200px] group">
-              <div className="w-8 h-8 rounded-full bg-blue-50 flex items-center justify-center text-blue-600 text-xs font-bold group-hover:bg-blue-100"><i className="fa-solid fa-user-tag"></i></div>
-              <div className="flex-1 text-left"><p className="text-[9px] font-black uppercase text-slate-400 leading-none mb-0.5">Filter by User</p><p className="text-sm font-black text-slate-800 truncate">{filterUser === 'All' ? 'All Members' : filterUser}</p></div>
-              <i className={`fa-solid fa-chevron-down text-[10px] text-slate-400 transition-transform ${isDropdownOpen ? 'rotate-180 text-blue-500' : ''}`}></i>
+              <div className="w-8 h-8 rounded-full bg-blue-50 flex items-center justify-center text-blue-600 text-xs font-bold"><i className="fa-solid fa-user-tag"></i></div>
+              <div className="flex-1 text-left"><p className="text-[9px] font-black uppercase text-slate-400 leading-none mb-0.5">Filter User</p><p className="text-sm font-black text-slate-800 truncate">{filterUser === 'All' ? 'All Members' : filterUser}</p></div>
+              <i className={`fa-solid fa-chevron-down text-[10px] text-slate-400 transition-transform ${isDropdownOpen ? 'rotate-180' : ''}`}></i>
             </button>
             {isDropdownOpen && (
               <div className="absolute right-0 mt-2 w-full min-w-[220px] bg-white border border-slate-100 rounded-2xl shadow-2xl z-[70] py-2 overflow-hidden border-t-4 border-t-blue-500">
@@ -100,7 +97,7 @@ export const Dashboard: React.FC<DashboardProps> = ({ tasks, teamMembers, onAddC
         {filteredTasks.length === 0 ? (
           <div className="bg-white p-20 rounded-[2.5rem] border border-slate-200 text-center shadow-sm">
             <i className="fa-solid fa-mug-hot text-slate-200 text-4xl mb-4"></i>
-            <p className="text-slate-400 font-bold uppercase tracking-widest text-[10px]">No Active Tracks Found</p>
+            <p className="text-slate-400 font-bold uppercase tracking-widest text-[10px]">No Active Tracks</p>
           </div>
         ) : filteredTasks.map(task => {
           const flag = getHealthConfig(task.healthStatus);
@@ -117,7 +114,7 @@ export const Dashboard: React.FC<DashboardProps> = ({ tasks, teamMembers, onAddC
                       <i className={`fa-solid ${getCategoryIcon(task.category || 'General')}`}></i>
                     </div>
                     <div>
-                      <div className="flex items-center gap-3 mb-1">
+                      <div className="flex flex-wrap items-center gap-3 mb-1">
                         <span className="text-[10px] font-black uppercase tracking-widest text-blue-600 bg-blue-50 px-2 py-0.5 rounded-md">{task.project}</span>
                         {task.sprint && <span className="text-[10px] font-black uppercase tracking-widest text-indigo-600 bg-indigo-50 px-2 py-0.5 rounded-md border border-indigo-100">{task.sprint}</span>}
                         <span className={`text-[10px] font-black uppercase tracking-widest text-slate-500 bg-slate-100 px-2 py-0.5 rounded-md`}>{task.category || 'General'}</span>
@@ -160,7 +157,7 @@ export const Dashboard: React.FC<DashboardProps> = ({ tasks, teamMembers, onAddC
 
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-8">
                   <div className="bg-slate-50/80 p-5 rounded-2xl border border-slate-100/50">
-                    <p className="text-[10px] text-slate-400 mb-2 uppercase font-black tracking-widest">Progress Metrics</p>
+                    <p className="text-[10px] text-slate-400 mb-2 uppercase font-black tracking-widest">Progress</p>
                     <div className="flex items-center gap-4">
                       <div className="flex-1 bg-slate-200 h-2.5 rounded-full overflow-hidden">
                         <div className={`h-full ${flag ? flag.flagColor.replace('text', 'bg') : 'bg-slate-400'}`} style={{ width: `${latest?.progress || 0}%` }}></div>
@@ -168,17 +165,17 @@ export const Dashboard: React.FC<DashboardProps> = ({ tasks, teamMembers, onAddC
                       <span className="text-sm font-black text-slate-700">{latest?.progress || 0}%</span>
                     </div>
                   </div>
-                  <div className="bg-slate-50/80 p-5 rounded-2xl border border-slate-100/50"><p className="text-[10px] text-slate-400 mb-2 uppercase font-black tracking-widest">Target Deadline</p><p className="text-sm font-bold text-slate-800 flex items-center gap-2"><i className="fa-regular fa-calendar-check text-blue-500"></i>{new Date(task.targetDate).toLocaleDateString()}</p></div>
+                  <div className="bg-slate-50/80 p-5 rounded-2xl border border-slate-100/50"><p className="text-[10px] text-slate-400 mb-2 uppercase font-black tracking-widest">Target Date</p><p className="text-sm font-bold text-slate-800 flex items-center gap-2"><i className="fa-regular fa-calendar-check text-blue-500"></i>{new Date(task.targetDate).toLocaleDateString()}</p></div>
                   <div className="bg-slate-50/80 p-5 rounded-2xl border border-slate-100/50"><p className="text-[10px] text-slate-400 mb-2 uppercase font-black tracking-widest">Assignee</p><p className="text-sm font-bold text-slate-800 flex items-center gap-2"><div className="w-5 h-5 rounded-full bg-slate-200 flex items-center justify-center text-[8px] font-black">{task.assignee.charAt(0)}</div>{task.assignee}</p></div>
                 </div>
                 <div className="mt-8 border-t border-slate-100 pt-6">
                   <div className="flex items-center gap-3 mb-4"><div className="p-1.5 bg-slate-100 rounded-lg"><i className="fa-solid fa-comments text-slate-400 text-xs"></i></div><h4 className="text-[10px] font-black text-slate-500 uppercase tracking-widest">Directives</h4></div>
                   <div className="space-y-3 mb-6">
-                    {task.leadComments?.length ? task.leadComments.map((c, i) => (<div key={i} className="text-sm bg-blue-50/30 text-blue-900 p-4 rounded-2xl border border-blue-100/50 flex items-start gap-3 shadow-sm"><i className="fa-solid fa-quote-left text-blue-200 mt-1"></i><span className="flex-1 font-medium italic leading-relaxed">{c}</span></div>)) : <p className="text-xs text-slate-400 italic px-2">No active feedback.</p>}
+                    {task.leadComments?.length ? task.leadComments.map((c, i) => (<div key={i} className="text-sm bg-blue-50/30 text-blue-900 p-4 rounded-2xl border border-blue-100/50 flex items-start gap-3 shadow-sm"><i className="fa-solid fa-quote-left text-blue-200 mt-1"></i><span className="flex-1 font-medium italic leading-relaxed">{c}</span></div>)) : <p className="text-xs text-slate-400 italic px-2">No feedback.</p>}
                   </div>
                   {!isReadOnly && (
                     <div className="flex gap-3">
-                      <input type="text" placeholder="Add feedback..." className="flex-1 bg-slate-50 border border-slate-200 rounded-2xl px-5 py-3 text-sm font-medium focus:ring-2 focus:ring-blue-500/20 outline-none" value={commentInput[task.id] || ''} onChange={e => setCommentInput({...commentInput, [task.id]: e.target.value})} />
+                      <input type="text" placeholder="Enter" className="flex-1 bg-slate-50 border border-slate-200 rounded-2xl px-5 py-3 text-sm font-medium focus:ring-2 focus:ring-blue-500/20 outline-none" value={commentInput[task.id] || ''} onChange={e => setCommentInput({...commentInput, [task.id]: e.target.value})} />
                       <button onClick={() => { if (!commentInput[task.id]) return; onAddComment(task.id, commentInput[task.id]); setCommentInput({...commentInput, [task.id]: ''}); }} className="bg-slate-900 text-white px-6 py-3 rounded-2xl text-xs font-black uppercase tracking-widest hover:bg-black transition-all flex items-center gap-2 shadow-lg active:scale-95">Post</button>
                     </div>
                   )}
