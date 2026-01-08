@@ -7,9 +7,10 @@ interface CompletedViewProps {
   teamMembers: TeamMember[];
   onAddComment: (id: string, comment: string) => void;
   onDeleteTask: (id: string) => void;
+  isReadOnly?: boolean;
 }
 
-export const CompletedView: React.FC<CompletedViewProps> = ({ tasks, teamMembers, onAddComment, onDeleteTask }) => {
+export const CompletedView: React.FC<CompletedViewProps> = ({ tasks, teamMembers, onAddComment, onDeleteTask, isReadOnly = false }) => {
   const [commentInput, setCommentInput] = useState<{ [key: string]: string }>({});
   const [filterUser, setFilterUser] = useState<string>('All');
   const [filterStatus, setFilterStatus] = useState<string>('All');
@@ -100,7 +101,6 @@ export const CompletedView: React.FC<CompletedViewProps> = ({ tasks, teamMembers
         </div>
 
         <div className="flex flex-wrap items-center gap-4">
-          {/* Status Filter */}
           <div className="relative z-[70]" ref={statusDropdownRef}>
             <button onClick={() => setIsStatusDropdownOpen(!isStatusDropdownOpen)} className="flex items-center gap-3 px-4 py-2.5 bg-white border border-slate-200 rounded-xl hover:border-blue-400 hover:shadow-lg transition-all min-w-[180px] group">
               <div className="w-8 h-8 rounded-full bg-slate-50 flex items-center justify-center text-slate-400 text-xs font-bold group-hover:bg-blue-50 group-hover:text-blue-500">
@@ -122,7 +122,6 @@ export const CompletedView: React.FC<CompletedViewProps> = ({ tasks, teamMembers
             )}
           </div>
 
-          {/* Category Filter */}
           <div className="relative z-[65]" ref={categoryDropdownRef}>
             <button onClick={() => setIsCategoryDropdownOpen(!isCategoryDropdownOpen)} className="flex items-center gap-3 px-4 py-2.5 bg-white border border-slate-200 rounded-xl hover:border-blue-400 hover:shadow-lg transition-all min-w-[180px] group">
               <div className="w-8 h-8 rounded-full bg-slate-50 flex items-center justify-center text-slate-400 text-xs font-bold group-hover:bg-blue-50 group-hover:text-blue-500">
@@ -144,7 +143,6 @@ export const CompletedView: React.FC<CompletedViewProps> = ({ tasks, teamMembers
             )}
           </div>
 
-          {/* User Filter */}
           <div className="relative z-[60]" ref={userDropdownRef}>
             <button onClick={() => setIsUserDropdownOpen(!isUserDropdownOpen)} className="flex items-center gap-3 px-4 py-2.5 bg-white border border-slate-200 rounded-xl hover:border-blue-400 hover:shadow-lg transition-all min-w-[180px] group">
               <div className="w-8 h-8 rounded-full bg-slate-50 flex items-center justify-center text-slate-400 text-xs font-bold group-hover:bg-blue-50 group-hover:text-blue-500">
@@ -169,7 +167,7 @@ export const CompletedView: React.FC<CompletedViewProps> = ({ tasks, teamMembers
 
       <div className="grid grid-cols-1 gap-6 relative z-10">
         {filteredTasks.length === 0 ? (
-          <div className="bg-white p-20 rounded-3xl border-2 border-dashed border-slate-200 text-center">
+          <div className="bg-white p-20 rounded-[2.5rem] border border-slate-200 text-center shadow-sm">
              <div className="w-20 h-20 bg-slate-50 rounded-full flex items-center justify-center mx-auto mb-6"><i className="fa-solid fa-magnifying-glass text-slate-200 text-3xl"></i></div>
             <h3 className="text-xl font-bold text-slate-800">No matching records</h3>
             <p className="text-slate-400 mt-2">Adjust filters to browse archive.</p>
@@ -181,8 +179,10 @@ export const CompletedView: React.FC<CompletedViewProps> = ({ tasks, teamMembers
             const timeInfo = getTimeStatus(task);
             
             return (
-              <div key={task.id} className="group bg-white rounded-3xl shadow-sm border border-slate-200 overflow-hidden relative hover:shadow-xl hover:border-blue-200 transition-all">
-                <button onClick={() => onDeleteTask(task.id)} className="absolute top-6 right-6 p-2 text-slate-200 hover:text-red-500 hover:bg-red-50 rounded-xl transition-all opacity-0 group-hover:opacity-100 z-10"><i className="fa-solid fa-trash-can"></i></button>
+              <div key={task.id} className="group bg-white rounded-[2rem] shadow-sm border border-slate-200 overflow-hidden relative hover:shadow-xl hover:border-blue-200 transition-all">
+                {!isReadOnly && (
+                  <button onClick={() => onDeleteTask(task.id)} className="absolute top-6 right-6 p-2 text-slate-200 hover:text-red-500 hover:bg-red-50 rounded-xl transition-all opacity-0 group-hover:opacity-100 z-10"><i className="fa-solid fa-trash-can"></i></button>
+                )}
                 <div className="p-8">
                   <div className="flex flex-wrap justify-between items-start gap-4 mb-6 pr-10">
                     <div className="flex gap-5">
@@ -221,10 +221,12 @@ export const CompletedView: React.FC<CompletedViewProps> = ({ tasks, teamMembers
                     <div className="space-y-3 mb-6">
                       {task.leadComments?.length ? task.leadComments.map((c, i) => (<div key={i} className="text-sm bg-blue-50/20 text-blue-900 p-4 rounded-2xl border border-blue-100/30 flex items-start gap-3"><span className="flex-1 font-medium italic leading-relaxed">{c}</span></div>)) : <p className="text-xs text-slate-400 italic px-2">No archive feedback found.</p>}
                     </div>
-                    <div className="flex gap-3">
-                      <input type="text" placeholder="Add retrospective comment..." className="flex-1 bg-white border border-slate-200 rounded-2xl px-5 py-3 text-sm font-medium focus:ring-2 focus:ring-blue-500/20 outline-none transition-all" value={commentInput[task.id] || ''} onChange={e => setCommentInput({...commentInput, [task.id]: e.target.value})} />
-                      <button onClick={() => { if (!commentInput[task.id]) return; onAddComment(task.id, commentInput[task.id]); setCommentInput({...commentInput, [task.id]: ''}); }} className="bg-slate-900 text-white px-6 py-3 rounded-2xl text-xs font-black uppercase tracking-widest hover:bg-black transition-all shadow-md active:scale-95">Append Note</button>
-                    </div>
+                    {!isReadOnly && (
+                      <div className="flex gap-3">
+                        <input type="text" placeholder="Add retrospective comment..." className="flex-1 bg-white border border-slate-200 rounded-2xl px-5 py-3 text-sm font-medium focus:ring-2 focus:ring-blue-500/20 outline-none transition-all" value={commentInput[task.id] || ''} onChange={e => setCommentInput({...commentInput, [task.id]: e.target.value})} />
+                        <button onClick={() => { if (!commentInput[task.id]) return; onAddComment(task.id, commentInput[task.id]); setCommentInput({...commentInput, [task.id]: ''}); }} className="bg-slate-900 text-white px-6 py-3 rounded-2xl text-xs font-black uppercase tracking-widest hover:bg-black transition-all shadow-md active:scale-95">Append Note</button>
+                      </div>
+                    )}
                   </div>
                 </div>
               </div>

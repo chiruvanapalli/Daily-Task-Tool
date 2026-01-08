@@ -7,9 +7,10 @@ interface DashboardProps {
   teamMembers: TeamMember[];
   onAddComment: (id: string, comment: string) => void;
   onDeleteTask: (id: string) => void;
+  isReadOnly?: boolean;
 }
 
-export const Dashboard: React.FC<DashboardProps> = ({ tasks, teamMembers, onAddComment, onDeleteTask }) => {
+export const Dashboard: React.FC<DashboardProps> = ({ tasks, teamMembers, onAddComment, onDeleteTask, isReadOnly = false }) => {
   const [commentInput, setCommentInput] = useState<{ [key: string]: string }>({});
   const [filterUser, setFilterUser] = useState<string>('All');
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
@@ -40,7 +41,7 @@ export const Dashboard: React.FC<DashboardProps> = ({ tasks, teamMembers, onAddC
     const latestUpdate = task.updates[task.updates.length - 1];
     const actualProgress = latestUpdate ? latestUpdate.progress : 0;
 
-    if (latestUpdate?.status === 'Completed') return { label: 'Completed', color: 'bg-emerald-100 text-emerald-800', dot: 'bg-emerald-500', icon: 'fa-check-circle', flagColor: 'text-emerald-500' };
+    if (latestUpdate?.status === 'Completed') return { label: 'Completed', color: 'bg-emerald-100 text-emerald-800', dot: 'bg-emerald-50', icon: 'fa-check-circle', flagColor: 'text-emerald-500' };
     if (latestUpdate?.blockers && latestUpdate.blockers.trim() !== "") return { label: 'Delayed (Blocked)', color: 'bg-red-100 text-red-800', dot: 'bg-red-500', icon: 'fa-flag', flagColor: 'text-red-600' };
     if (actualProgress < plannedProgress - 20) return { label: 'Delayed', color: 'bg-red-100 text-red-800', dot: 'bg-red-500', icon: 'fa-flag', flagColor: 'text-red-600' };
     if (actualProgress < plannedProgress - 5) return { label: 'At Risk', color: 'bg-orange-100 text-orange-800', dot: 'bg-orange-500', icon: 'fa-flag', flagColor: 'text-orange-500' };
@@ -66,7 +67,7 @@ export const Dashboard: React.FC<DashboardProps> = ({ tasks, teamMembers, onAddC
   };
 
   return (
-    <div className="max-w-6xl mx-auto">
+    <div className="max-w-6xl mx-auto animate-in fade-in duration-500">
       <header className="mb-10 flex flex-col xl:flex-row xl:items-center justify-between gap-6">
         <div>
           <h2 className="text-3xl font-black text-slate-900 tracking-tight">Team Dashboard</h2>
@@ -97,12 +98,19 @@ export const Dashboard: React.FC<DashboardProps> = ({ tasks, teamMembers, onAddC
       </header>
 
       <div className="grid grid-cols-1 gap-6 relative z-10">
-        {filteredTasks.map(task => {
+        {filteredTasks.length === 0 ? (
+          <div className="bg-white p-20 rounded-[2.5rem] border border-slate-200 text-center shadow-sm">
+            <i className="fa-solid fa-mug-hot text-slate-200 text-4xl mb-4"></i>
+            <p className="text-slate-400 font-bold uppercase tracking-widest text-[10px]">No Active Tracks Found</p>
+          </div>
+        ) : filteredTasks.map(task => {
           const flag = calculateFlag(task);
           const latest = task.updates[task.updates.length - 1];
           return (
-            <div key={task.id} className="group bg-white rounded-3xl shadow-sm border border-slate-200 overflow-hidden hover:border-blue-200 hover:shadow-xl transition-all relative">
-              <button onClick={() => onDeleteTask(task.id)} className="absolute top-6 right-6 p-2.5 text-slate-200 hover:text-red-500 hover:bg-red-50 rounded-xl transition-all opacity-0 group-hover:opacity-100 z-10"><i className="fa-solid fa-trash-can"></i></button>
+            <div key={task.id} className="group bg-white rounded-[2rem] shadow-sm border border-slate-200 overflow-hidden hover:border-blue-200 hover:shadow-xl transition-all relative">
+              {!isReadOnly && (
+                <button onClick={() => onDeleteTask(task.id)} className="absolute top-6 right-6 p-2.5 text-slate-200 hover:text-red-500 hover:bg-red-50 rounded-xl transition-all opacity-0 group-hover:opacity-100 z-10"><i className="fa-solid fa-trash-can"></i></button>
+              )}
               <div className="p-8">
                 <div className="flex flex-wrap justify-between items-start gap-4 mb-6 pr-10">
                   <div className="flex gap-5">
@@ -125,17 +133,19 @@ export const Dashboard: React.FC<DashboardProps> = ({ tasks, teamMembers, onAddC
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-8">
                   <div className="bg-slate-50/80 p-5 rounded-2xl border border-slate-100/50"><p className="text-[10px] text-slate-400 mb-2 uppercase font-black tracking-widest">Progress Metrics</p><div className="flex items-center gap-4"><div className="flex-1 bg-slate-200 h-2.5 rounded-full overflow-hidden"><div className={`h-full ${flag.flagColor.replace('text', 'bg')}`} style={{ width: `${latest?.progress || 0}%` }}></div></div><span className="text-sm font-black text-slate-700">{latest?.progress || 0}%</span></div></div>
                   <div className="bg-slate-50/80 p-5 rounded-2xl border border-slate-100/50"><p className="text-[10px] text-slate-400 mb-2 uppercase font-black tracking-widest">Target Deadline</p><p className="text-sm font-bold text-slate-800 flex items-center gap-2"><i className="fa-regular fa-calendar-check text-blue-500"></i>{new Date(task.targetDate).toLocaleDateString()}</p></div>
-                  <div className="bg-slate-50/80 p-5 rounded-2xl border border-slate-100/50"><p className="text-[10px] text-slate-400 mb-2 uppercase font-black tracking-widest">Assignee</p><p className="text-sm font-bold text-slate-800 flex items-center gap-2"><div className="w-5 h-5 rounded-full bg-slate-200 flex items-center justify-center text-[8px]">{task.assignee.charAt(0)}</div>{task.assignee}</p></div>
+                  <div className="bg-slate-50/80 p-5 rounded-2xl border border-slate-100/50"><p className="text-[10px] text-slate-400 mb-2 uppercase font-black tracking-widest">Assignee</p><p className="text-sm font-bold text-slate-800 flex items-center gap-2"><div className="w-5 h-5 rounded-full bg-slate-200 flex items-center justify-center text-[8px] font-black">{task.assignee.charAt(0)}</div>{task.assignee}</p></div>
                 </div>
                 <div className="mt-8 border-t border-slate-100 pt-6">
                   <div className="flex items-center gap-3 mb-4"><div className="p-1.5 bg-slate-100 rounded-lg"><i className="fa-solid fa-comments text-slate-400 text-xs"></i></div><h4 className="text-[10px] font-black text-slate-500 uppercase tracking-widest">Directives</h4></div>
                   <div className="space-y-3 mb-6">
                     {task.leadComments?.length ? task.leadComments.map((c, i) => (<div key={i} className="text-sm bg-blue-50/30 text-blue-900 p-4 rounded-2xl border border-blue-100/50 flex items-start gap-3 shadow-sm"><i className="fa-solid fa-quote-left text-blue-200 mt-1"></i><span className="flex-1 font-medium italic leading-relaxed">{c}</span></div>)) : <p className="text-xs text-slate-400 italic px-2">No active feedback.</p>}
                   </div>
-                  <div className="flex gap-3">
-                    <input type="text" placeholder="Add feedback..." className="flex-1 bg-slate-50 border border-slate-200 rounded-2xl px-5 py-3 text-sm font-medium focus:ring-2 focus:ring-blue-500/20 outline-none" value={commentInput[task.id] || ''} onChange={e => setCommentInput({...commentInput, [task.id]: e.target.value})} />
-                    <button onClick={() => { if (!commentInput[task.id]) return; onAddComment(task.id, commentInput[task.id]); setCommentInput({...commentInput, [task.id]: ''}); }} className="bg-slate-900 text-white px-6 py-3 rounded-2xl text-xs font-black uppercase tracking-widest hover:bg-black transition-all flex items-center gap-2 shadow-lg">Post</button>
-                  </div>
+                  {!isReadOnly && (
+                    <div className="flex gap-3">
+                      <input type="text" placeholder="Add feedback..." className="flex-1 bg-slate-50 border border-slate-200 rounded-2xl px-5 py-3 text-sm font-medium focus:ring-2 focus:ring-blue-500/20 outline-none" value={commentInput[task.id] || ''} onChange={e => setCommentInput({...commentInput, [task.id]: e.target.value})} />
+                      <button onClick={() => { if (!commentInput[task.id]) return; onAddComment(task.id, commentInput[task.id]); setCommentInput({...commentInput, [task.id]: ''}); }} className="bg-slate-900 text-white px-6 py-3 rounded-2xl text-xs font-black uppercase tracking-widest hover:bg-black transition-all flex items-center gap-2 shadow-lg active:scale-95">Post</button>
+                    </div>
+                  )}
                 </div>
               </div>
             </div>
