@@ -86,7 +86,7 @@ export const Dashboard: React.FC<DashboardProps> = ({ tasks, teamMembers, onAddC
         </div>
       </header>
 
-      {/* Grid View */}
+      {/* Standardized 3-Column Grid View */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
         {filteredTasks.length === 0 ? (
           <div className="col-span-full bg-white p-20 rounded-xl border border-slate-200 text-center shadow-sm">

@@ -139,8 +139,8 @@ export const CompletedView: React.FC<CompletedViewProps> = ({ tasks, teamMembers
         </div>
       </header>
 
-      {/* Grid View */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+      {/* Optimized 3-Column Grid View with Increased Font Size */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
         {filteredTasks.length === 0 ? (
           <div className="col-span-full bg-white p-20 rounded-xl border border-slate-200 text-center shadow-sm">
             <h3 className="text-xl font-bold text-slate-800">No records found</h3>
@@ -157,15 +157,15 @@ export const CompletedView: React.FC<CompletedViewProps> = ({ tasks, teamMembers
                 className="group bg-white rounded-xl p-6 border border-slate-200 hover:border-slate-900 transition-all cursor-pointer relative flex flex-col hover:shadow-xl shadow-slate-200/50 animate-in fade-in zoom-in-95 duration-300"
               >
                 <div className="flex justify-between items-start mb-3">
-                   <div className="text-[8px] font-black uppercase text-slate-400 tracking-widest">{task.project}</div>
-                   <div className={`text-[9px] font-black uppercase px-2 py-0.5 rounded ${latest?.status === 'Completed' ? 'bg-emerald-50 text-emerald-600' : 'bg-slate-100 text-slate-500'}`}>{latest?.status || 'Assigned'}</div>
+                   <div className="text-[10px] font-black uppercase text-slate-400 tracking-widest">{task.project}</div>
+                   <div className={`text-[11px] font-black uppercase px-2 py-0.5 rounded ${latest?.status === 'Completed' ? 'bg-emerald-50 text-emerald-600' : 'bg-slate-100 text-slate-500'}`}>{latest?.status || 'Assigned'}</div>
                 </div>
-                <h3 className="text-sm font-black text-slate-900 leading-tight mb-4 flex-1 line-clamp-2 group-hover:text-blue-600 transition-colors">{task.title}</h3>
-                <div className="mt-auto space-y-3">
-                   <div className="flex items-center justify-between text-[10px] font-bold">
+                <h3 className="text-base font-black text-slate-900 leading-tight mb-4 flex-1 line-clamp-2 group-hover:text-blue-600 transition-colors">{task.title}</h3>
+                <div className="mt-auto space-y-3 pt-3 border-t border-slate-50">
+                   <div className="flex items-center justify-between text-xs font-bold">
                       <div className="flex items-center gap-2 text-slate-500">
-                         <div className="w-5 h-5 rounded-full bg-slate-100 flex items-center justify-center text-[7px]">{task.assignee.charAt(0)}</div>
-                         {task.assignee}
+                         <div className="w-6 h-6 rounded-full bg-slate-100 flex items-center justify-center text-[9px] border border-slate-200">{task.assignee.charAt(0)}</div>
+                         <span>{task.assignee}</span>
                       </div>
                       <div className={timeInfo.color}>{timeInfo.label}</div>
                    </div>
@@ -190,27 +190,27 @@ export const CompletedView: React.FC<CompletedViewProps> = ({ tasks, teamMembers
             <div className="p-10 overflow-y-auto">
               <header className="mb-8">
                 <div className="flex items-center gap-2 mb-3">
-                  <span className="text-[10px] font-black uppercase tracking-widest text-slate-500 bg-slate-100 px-2 py-0.5 rounded">{selectedTask.project}</span>
-                  <span className="text-[10px] font-black uppercase tracking-widest text-blue-600 bg-blue-50 px-2 py-0.5 rounded">{selectedTask.category}</span>
+                  <span className="text-xs font-black uppercase tracking-widest text-slate-500 bg-slate-100 px-2.5 py-1 rounded">{selectedTask.project}</span>
+                  <span className="text-xs font-black uppercase tracking-widest text-blue-600 bg-blue-50 px-2.5 py-1 rounded">{selectedTask.category}</span>
                 </div>
                 <h3 className="text-3xl font-black text-slate-900 leading-tight">{selectedTask.title}</h3>
                 
                 <div className="grid grid-cols-2 gap-4 mt-8">
                   <div className="p-4 bg-slate-50 rounded-lg">
-                    <p className="text-[8px] font-black text-slate-400 uppercase tracking-widest mb-1">Timeline</p>
-                    <p className="text-xs font-bold text-slate-800">Target: {new Date(selectedTask.targetDate).toLocaleDateString()}</p>
+                    <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Timeline</p>
+                    <p className="text-sm font-bold text-slate-800">Target: {new Date(selectedTask.targetDate).toLocaleDateString()}</p>
                   </div>
                   <div className="p-4 bg-slate-50 rounded-lg">
-                    <p className="text-[8px] font-black text-slate-400 uppercase tracking-widest mb-1">Owner</p>
-                    <p className="text-xs font-bold text-slate-800">{selectedTask.assignee}</p>
+                    <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Owner</p>
+                    <p className="text-sm font-bold text-slate-800">{selectedTask.assignee}</p>
                   </div>
                 </div>
               </header>
 
               <div className="space-y-8">
                 <div className="p-6 bg-slate-50 rounded-xl border border-slate-100">
-                  <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-4">Final Submission Log</p>
-                  <p className="text-sm text-slate-700 italic font-medium leading-relaxed">
+                  <p className="text-xs font-black text-slate-400 uppercase tracking-widest mb-4">Final Submission Log</p>
+                  <p className="text-base text-slate-700 italic font-medium leading-relaxed">
                     {selectedTask.updates[selectedTask.updates.length-1]?.workCompleted ? 
                       `"${selectedTask.updates[selectedTask.updates.length-1].workCompleted}"` : 
                       <span className="text-slate-400">Awaiting first EOD submission.</span>
@@ -218,22 +218,22 @@ export const CompletedView: React.FC<CompletedViewProps> = ({ tasks, teamMembers
                   </p>
                   {selectedTask.updates[selectedTask.updates.length-1]?.blockers && (
                     <div className="mt-4 pt-4 border-t border-slate-200">
-                       <p className="text-[9px] font-black text-red-400 uppercase mb-1">Managed Blockers</p>
-                       <p className="text-xs font-bold text-red-600">{selectedTask.updates[selectedTask.updates.length-1].blockers}</p>
+                       <p className="text-[10px] font-black text-red-400 uppercase mb-1">Managed Blockers</p>
+                       <p className="text-sm font-bold text-red-600">{selectedTask.updates[selectedTask.updates.length-1].blockers}</p>
                     </div>
                   )}
                 </div>
 
                 <div>
-                  <h4 className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-4 flex items-center gap-2">Feedback History</h4>
+                  <h4 className="text-xs font-black text-slate-400 uppercase tracking-widest mb-4 flex items-center gap-2">Feedback History</h4>
                   <div className="space-y-3">
                     {selectedTask.leadComments?.length ? 
                       selectedTask.leadComments.map((c, i) => (
-                        <div key={i} className="text-sm bg-blue-50/20 text-blue-900 p-4 rounded-xl border border-blue-100/30 font-medium italic">
+                        <div key={i} className="text-base bg-blue-50/20 text-blue-900 p-4 rounded-xl border border-blue-100/30 font-medium italic">
                           {c}
                         </div>
                       )) : 
-                      <p className="text-xs text-slate-400 italic">No historical feedback archived.</p>
+                      <p className="text-sm text-slate-400 italic">No historical feedback archived.</p>
                     }
                   </div>
                 </div>
