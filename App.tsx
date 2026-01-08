@@ -96,10 +96,12 @@ const App: React.FC = () => {
   };
 
   const handleLogout = () => {
-    setRole(null);
-    setPasscode('');
-    setView('dashboard');
-    localStorage.removeItem('workspace_role');
+    if (window.confirm("Are you sure you want to logout?")) {
+      setRole(null);
+      setPasscode('');
+      setView('dashboard');
+      localStorage.removeItem('workspace_role');
+    }
   };
 
   const addTask = (task: Task) => setTasks(prev => [...prev, task]);
@@ -210,6 +212,66 @@ const App: React.FC = () => {
   };
 
   const activeTasks = tasks.filter(t => t.updates[t.updates.length - 1]?.status !== 'Completed');
+
+  if (!role) {
+    return (
+      <div className="min-h-screen bg-slate-900 flex items-center justify-center p-6 antialiased font-sans">
+        <div className="max-w-md w-full animate-in fade-in zoom-in duration-500">
+          <div className="flex flex-col items-center mb-10">
+            <div className="w-16 h-16 bg-gradient-to-br from-blue-400 to-blue-600 rounded-2xl flex items-center justify-center text-3xl font-black text-white shadow-2xl shadow-blue-500/20 mb-4">WS</div>
+            <h1 className="text-3xl font-black text-white tracking-tight">Work Space</h1>
+            <p className="text-slate-400 font-medium italic mt-1">High-Performance Task Tracker</p>
+          </div>
+          
+          <form onSubmit={handleLogin} className="bg-white p-10 rounded-[2.5rem] shadow-2xl space-y-8">
+            <div>
+              <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-3">Portal Access Key</label>
+              <input 
+                type="password" 
+                placeholder="••••••••" 
+                className="w-full bg-slate-50 border border-slate-200 rounded-2xl px-6 py-5 outline-none font-bold text-slate-800 text-center tracking-widest focus:ring-4 focus:ring-blue-500/10 focus:border-blue-400 transition-all text-xl"
+                value={passcode}
+                onChange={(e) => setPasscode(e.target.value)}
+                autoFocus
+              />
+            </div>
+
+            <button 
+              type="submit" 
+              disabled={isVerifying}
+              className={`w-full bg-slate-900 text-white font-black uppercase tracking-widest py-5 rounded-2xl shadow-xl transition-all flex items-center justify-center gap-3 active:scale-95 ${isVerifying ? 'opacity-50 cursor-not-allowed' : 'hover:bg-black hover:shadow-slate-200'}`}
+            >
+              {isVerifying ? (
+                <>
+                  <i className="fa-solid fa-circle-notch animate-spin"></i>
+                  Authenticating...
+                </>
+              ) : (
+                <>
+                  <i className="fa-solid fa-shield-halved"></i>
+                  Unlock Workspace
+                </>
+              )}
+            </button>
+
+            <div className="pt-6 border-t border-slate-100 flex flex-col gap-2">
+              <p className="text-center text-[10px] font-black text-slate-400 uppercase tracking-widest">Access Tiers</p>
+              <div className="flex justify-center gap-6">
+                 <div className="text-center">
+                    <p className="text-[9px] font-black text-blue-500 uppercase">Private</p>
+                    <p className="text-[10px] text-slate-300 font-mono">admin123</p>
+                 </div>
+                 <div className="text-center">
+                    <p className="text-[9px] font-black text-emerald-500 uppercase">Public</p>
+                    <p className="text-[10px] text-slate-300 font-mono">team2024</p>
+                 </div>
+              </div>
+            </div>
+          </form>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="flex flex-col md:flex-row min-h-screen bg-gray-50 font-sans text-slate-900 antialiased">
