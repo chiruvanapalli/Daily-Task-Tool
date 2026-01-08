@@ -14,7 +14,6 @@ const INITIAL_TASKS: Task[] = [
     id: 'demo-task-1',
     title: 'Landing Page Responsive Fixes',
     project: 'Q3 UI Refresh',
-    // Added missing required category property
     category: 'General',
     assignee: 'Akhilesh',
     startDate: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
@@ -155,7 +154,7 @@ const App: React.FC = () => {
   const activeTasks = tasks.filter(t => t.updates[t.updates.length - 1]?.status !== 'Completed');
 
   return (
-    <div className="flex flex-col md:flex-row min-h-screen bg-gray-50 font-sans text-slate-900">
+    <div className="flex flex-col md:flex-row min-h-screen bg-gray-50 font-sans text-slate-900 antialiased">
       <aside className="w-full md:w-64 bg-slate-900 text-white p-6 flex flex-col shadow-2xl z-20 max-h-screen overflow-y-auto">
         <div className="flex items-center gap-3 mb-10">
           <div className="w-10 h-10 bg-gradient-to-br from-blue-400 to-blue-600 rounded-xl flex items-center justify-center text-xl font-black shadow-lg shadow-blue-500/20">JS</div>
@@ -172,7 +171,7 @@ const App: React.FC = () => {
           >
             <div className="flex items-center gap-3">
               <i className="fa-solid fa-chart-pie"></i>
-              <span className="font-semibold">Dashboard</span>
+              <span className="font-semibold text-sm">Dashboard</span>
             </div>
           </button>
           
@@ -181,7 +180,7 @@ const App: React.FC = () => {
             className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200 ${view === 'lead' ? 'bg-blue-600 shadow-lg shadow-blue-600/30 text-white' : 'hover:bg-slate-800 text-slate-400 hover:text-white'}`}
           >
             <i className="fa-solid fa-plus-circle"></i>
-            <span className="font-semibold">Assign Tasks</span>
+            <span className="font-semibold text-sm">Assign Tasks</span>
           </button>
 
           <button 
@@ -189,7 +188,7 @@ const App: React.FC = () => {
             className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200 ${view === 'team' ? 'bg-blue-600 shadow-lg shadow-blue-600/30 text-white' : 'hover:bg-slate-800 text-slate-400 hover:text-white'}`}
           >
             <i className="fa-solid fa-users-gear"></i>
-            <span className="font-semibold">Manage Team</span>
+            <span className="font-semibold text-sm">Manage Team</span>
           </button>
           
           <button 
@@ -197,7 +196,7 @@ const App: React.FC = () => {
             className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200 ${view === 'member' ? 'bg-blue-600 shadow-lg shadow-blue-600/30 text-white' : 'hover:bg-slate-800 text-slate-400 hover:text-white'}`}
           >
             <i className="fa-solid fa-user-circle"></i>
-            <span className="font-semibold">Member Portal</span>
+            <span className="font-semibold text-sm">Member Portal</span>
           </button>
 
           <button 
@@ -206,7 +205,7 @@ const App: React.FC = () => {
           >
             <div className="flex items-center gap-3">
               <i className="fa-solid fa-layer-group"></i>
-              <span className="font-semibold">Tasks Archive</span>
+              <span className="font-semibold text-sm">Tasks Archive</span>
             </div>
             {tasks.length > 0 && (
               <span className="bg-white/20 text-[10px] font-bold px-2 py-0.5 rounded-full">{tasks.length}</span>
