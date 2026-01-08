@@ -11,6 +11,7 @@ export const LeadView: React.FC<LeadViewProps> = ({ teamMembers, onAddTask }) =>
   const [formData, setFormData] = useState({
     title: '',
     project: '',
+    sprint: '',
     category: 'General' as TaskCategory,
     assignee: teamMembers[0] || '',
     startDate: new Date().toISOString().split('T')[0],
@@ -39,13 +40,15 @@ export const LeadView: React.FC<LeadViewProps> = ({ teamMembers, onAddTask }) =>
     const newTask: Task = {
       id: Math.random().toString(36).substr(2, 9),
       ...formData,
-      updates: []
+      updates: [],
+      healthStatus: undefined
     };
 
     onAddTask(newTask);
     setFormData({
       title: '',
       project: '',
+      sprint: '',
       category: 'General',
       assignee: teamMembers[0] || '',
       startDate: new Date().toISOString().split('T')[0],
@@ -82,7 +85,19 @@ export const LeadView: React.FC<LeadViewProps> = ({ teamMembers, onAddTask }) =>
             />
           </div>
           <div>
-            <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">Category / Template</label>
+            <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">Sprint / Milestone</label>
+            <input 
+              type="text" 
+              placeholder="e.g., Sprint 1 or v1.0"
+              className="w-full bg-slate-50 border border-slate-200 rounded-2xl px-5 py-4 outline-none font-bold text-slate-800 focus:ring-2 focus:ring-blue-500/20 transition-all"
+              value={formData.sprint}
+              onChange={e => setFormData({...formData, sprint: e.target.value})}
+            />
+          </div>
+        </div>
+
+        <div>
+           <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">Category / Template</label>
             <div className="grid grid-cols-2 gap-2">
               {categories.map(cat => (
                 <button
@@ -96,7 +111,6 @@ export const LeadView: React.FC<LeadViewProps> = ({ teamMembers, onAddTask }) =>
                 </button>
               ))}
             </div>
-          </div>
         </div>
 
         <div>

@@ -1,25 +1,31 @@
 
 import React, { useState, useMemo, useRef, useEffect } from 'react';
-import { Task, TeamMember, TaskCategory } from '../types';
+import { Task, TeamMember, TaskCategory, HealthStatus } from '../types';
 
 interface DashboardProps {
   tasks: Task[];
   teamMembers: TeamMember[];
   onAddComment: (id: string, comment: string) => void;
   onDeleteTask: (id: string) => void;
+  onUpdateHealth?: (id: string, health: HealthStatus) => void;
   isReadOnly?: boolean;
 }
 
-export const Dashboard: React.FC<DashboardProps> = ({ tasks, teamMembers, onAddComment, onDeleteTask, isReadOnly = false }) => {
+export const Dashboard: React.FC<DashboardProps> = ({ tasks, teamMembers, onAddComment, onDeleteTask, onUpdateHealth, isReadOnly = false }) => {
   const [commentInput, setCommentInput] = useState<{ [key: string]: string }>({});
   const [filterUser, setFilterUser] = useState<string>('All');
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const [activeHealthSelect, setActiveHealthSelect] = useState<string | null>(null);
   const dropdownRef = useRef<HTMLDivElement>(null);
+  const healthRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
         setIsDropdownOpen(false);
+      }
+      if (healthRef.current && !healthRef.current.contains(event.target as Node)) {
+        setActiveHealthSelect(null);
       }
     };
     document.addEventListener('mousedown', handleClickOutside);
@@ -31,21 +37,14 @@ export const Dashboard: React.FC<DashboardProps> = ({ tasks, teamMembers, onAddC
     return tasks.filter(t => t.assignee === filterUser);
   }, [tasks, filterUser]);
 
-  const calculateFlag = (task: Task) => {
-    const start = new Date(task.startDate).getTime();
-    const target = new Date(task.targetDate).getTime();
-    const now = new Date().getTime();
-    const totalDuration = target - start;
-    const elapsed = now - start;
-    const plannedProgress = Math.min(100, Math.max(0, (elapsed / totalDuration) * 100));
-    const latestUpdate = task.updates[task.updates.length - 1];
-    const actualProgress = latestUpdate ? latestUpdate.progress : 0;
-
-    if (latestUpdate?.status === 'Completed') return { label: 'Completed', color: 'bg-emerald-100 text-emerald-800', dot: 'bg-emerald-50', icon: 'fa-check-circle', flagColor: 'text-emerald-500' };
-    if (latestUpdate?.blockers && latestUpdate.blockers.trim() !== "") return { label: 'Delayed (Blocked)', color: 'bg-red-100 text-red-800', dot: 'bg-red-500', icon: 'fa-flag', flagColor: 'text-red-600' };
-    if (actualProgress < plannedProgress - 20) return { label: 'Delayed', color: 'bg-red-100 text-red-800', dot: 'bg-red-500', icon: 'fa-flag', flagColor: 'text-red-600' };
-    if (actualProgress < plannedProgress - 5) return { label: 'At Risk', color: 'bg-orange-100 text-orange-800', dot: 'bg-orange-500', icon: 'fa-flag', flagColor: 'text-orange-500' };
-    return { label: 'On Track', color: 'bg-green-100 text-green-800', dot: 'bg-green-500', icon: 'fa-flag', flagColor: 'text-green-600' };
+  const getHealthConfig = (status?: HealthStatus) => {
+    switch(status) {
+      case 'On Track': return { label: 'On Track', color: 'bg-emerald-100 text-emerald-800', dot: 'bg-emerald-500', flagColor: 'text-emerald-500' };
+      case 'At Risk': return { label: 'At Risk', color: 'bg-orange-100 text-orange-800', dot: 'bg-orange-500', flagColor: 'text-orange-500' };
+      case 'Delayed': return { label: 'Delayed', color: 'bg-red-100 text-red-800', dot: 'bg-red-500', flagColor: 'text-red-600' };
+      case 'Review Required': return { label: 'Review Req.', color: 'bg-indigo-100 text-indigo-800', dot: 'bg-indigo-500', flagColor: 'text-indigo-600' };
+      default: return null;
+    }
   };
 
   const getStatusBadgeStyles = (status?: string) => {
@@ -66,6 +65,8 @@ export const Dashboard: React.FC<DashboardProps> = ({ tasks, teamMembers, onAddC
     }
   };
 
+  const healthOptions: HealthStatus[] = ['On Track', 'At Risk', 'Delayed', 'Review Required'];
+
   return (
     <div className="max-w-6xl mx-auto animate-in fade-in duration-500">
       <header className="mb-10 flex flex-col xl:flex-row xl:items-center justify-between gap-6">
@@ -75,9 +76,7 @@ export const Dashboard: React.FC<DashboardProps> = ({ tasks, teamMembers, onAddC
         </div>
         <div className="flex flex-wrap items-center gap-6">
           <div className="flex gap-5 px-2">
-            <span className="flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-slate-400"><span className="w-2.5 h-2.5 rounded-full bg-green-500 shadow-[0_0_8px_rgba(34,197,94,0.4)]"></span> On Track</span>
-            <span className="flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-slate-400"><span className="w-2.5 h-2.5 rounded-full bg-orange-500 shadow-[0_0_8px_rgba(249,115,22,0.4)]"></span> At Risk</span>
-            <span className="flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-slate-400"><span className="w-2.5 h-2.5 rounded-full bg-red-500 shadow-[0_0_8px_rgba(239,68,68,0.4)]"></span> Delayed</span>
+             <span className="text-[10px] font-black uppercase tracking-widest text-slate-400">Manual Health Control Enabled</span>
           </div>
           <div className="relative z-[60]" ref={dropdownRef}>
             <button onClick={() => setIsDropdownOpen(!isDropdownOpen)} className="flex items-center gap-3 px-4 py-2 bg-white border border-slate-200 rounded-xl hover:border-blue-400 transition-all min-w-[200px] group">
@@ -104,7 +103,7 @@ export const Dashboard: React.FC<DashboardProps> = ({ tasks, teamMembers, onAddC
             <p className="text-slate-400 font-bold uppercase tracking-widest text-[10px]">No Active Tracks Found</p>
           </div>
         ) : filteredTasks.map(task => {
-          const flag = calculateFlag(task);
+          const flag = getHealthConfig(task.healthStatus);
           const latest = task.updates[task.updates.length - 1];
           return (
             <div key={task.id} className="group bg-white rounded-[2rem] shadow-sm border border-slate-200 overflow-hidden hover:border-blue-200 hover:shadow-xl transition-all relative">
@@ -120,18 +119,55 @@ export const Dashboard: React.FC<DashboardProps> = ({ tasks, teamMembers, onAddC
                     <div>
                       <div className="flex items-center gap-3 mb-1">
                         <span className="text-[10px] font-black uppercase tracking-widest text-blue-600 bg-blue-50 px-2 py-0.5 rounded-md">{task.project}</span>
+                        {task.sprint && <span className="text-[10px] font-black uppercase tracking-widest text-indigo-600 bg-indigo-50 px-2 py-0.5 rounded-md border border-indigo-100">{task.sprint}</span>}
                         <span className={`text-[10px] font-black uppercase tracking-widest text-slate-500 bg-slate-100 px-2 py-0.5 rounded-md`}>{task.category || 'General'}</span>
                         <span className={`text-[9px] px-2.5 py-1 rounded-full font-black uppercase tracking-tighter shadow-sm ${getStatusBadgeStyles(latest?.status)}`}>{latest?.status || 'Assigned'}</span>
                       </div>
                       <h3 className="text-2xl font-black text-slate-900 leading-tight">{task.title}</h3>
                     </div>
                   </div>
-                  <div className={`px-5 py-2 rounded-2xl text-[10px] font-black uppercase tracking-widest flex items-center gap-2.5 ${flag.color} border border-current/10 shadow-sm`}>
-                    <span className={`w-2.5 h-2.5 rounded-full ${flag.dot}`}></span>{flag.label}
+                  
+                  <div className="relative" ref={activeHealthSelect === task.id ? healthRef : null}>
+                    <button 
+                      onClick={() => !isReadOnly && setActiveHealthSelect(activeHealthSelect === task.id ? null : task.id)}
+                      disabled={isReadOnly}
+                      className={`px-5 py-2 rounded-2xl text-[10px] font-black uppercase tracking-widest flex items-center gap-2.5 border border-current/10 shadow-sm transition-all ${flag ? flag.color : 'bg-slate-100 text-slate-400'} ${!isReadOnly ? 'hover:scale-105 active:scale-95 cursor-pointer' : ''}`}
+                    >
+                      <span className={`w-2.5 h-2.5 rounded-full ${flag ? flag.dot : 'bg-slate-300'}`}></span>
+                      {flag ? flag.label : 'Set Health'}
+                      {!isReadOnly && <i className="fa-solid fa-caret-down opacity-50 ml-1"></i>}
+                    </button>
+
+                    {activeHealthSelect === task.id && !isReadOnly && (
+                      <div className="absolute right-0 mt-2 w-48 bg-white border border-slate-100 rounded-2xl shadow-2xl z-[80] py-2 overflow-hidden border-t-4 border-t-slate-900 animate-in fade-in zoom-in-95 duration-200">
+                        {healthOptions.map(opt => {
+                           const optCfg = getHealthConfig(opt);
+                           return (
+                            <button 
+                              key={opt}
+                              onClick={() => { onUpdateHealth?.(task.id, opt); setActiveHealthSelect(null); }}
+                              className={`w-full text-left px-5 py-3 text-[10px] font-black uppercase tracking-widest flex items-center gap-3 hover:bg-slate-50 transition-colors ${task.healthStatus === opt ? 'bg-slate-50 text-slate-900' : 'text-slate-400'}`}
+                            >
+                              <span className={`w-2 h-2 rounded-full ${optCfg?.dot}`}></span>
+                              {opt}
+                            </button>
+                           );
+                        })}
+                      </div>
+                    )}
                   </div>
                 </div>
+
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-8">
-                  <div className="bg-slate-50/80 p-5 rounded-2xl border border-slate-100/50"><p className="text-[10px] text-slate-400 mb-2 uppercase font-black tracking-widest">Progress Metrics</p><div className="flex items-center gap-4"><div className="flex-1 bg-slate-200 h-2.5 rounded-full overflow-hidden"><div className={`h-full ${flag.flagColor.replace('text', 'bg')}`} style={{ width: `${latest?.progress || 0}%` }}></div></div><span className="text-sm font-black text-slate-700">{latest?.progress || 0}%</span></div></div>
+                  <div className="bg-slate-50/80 p-5 rounded-2xl border border-slate-100/50">
+                    <p className="text-[10px] text-slate-400 mb-2 uppercase font-black tracking-widest">Progress Metrics</p>
+                    <div className="flex items-center gap-4">
+                      <div className="flex-1 bg-slate-200 h-2.5 rounded-full overflow-hidden">
+                        <div className={`h-full ${flag ? flag.flagColor.replace('text', 'bg') : 'bg-slate-400'}`} style={{ width: `${latest?.progress || 0}%` }}></div>
+                      </div>
+                      <span className="text-sm font-black text-slate-700">{latest?.progress || 0}%</span>
+                    </div>
+                  </div>
                   <div className="bg-slate-50/80 p-5 rounded-2xl border border-slate-100/50"><p className="text-[10px] text-slate-400 mb-2 uppercase font-black tracking-widest">Target Deadline</p><p className="text-sm font-bold text-slate-800 flex items-center gap-2"><i className="fa-regular fa-calendar-check text-blue-500"></i>{new Date(task.targetDate).toLocaleDateString()}</p></div>
                   <div className="bg-slate-50/80 p-5 rounded-2xl border border-slate-100/50"><p className="text-[10px] text-slate-400 mb-2 uppercase font-black tracking-widest">Assignee</p><p className="text-sm font-bold text-slate-800 flex items-center gap-2"><div className="w-5 h-5 rounded-full bg-slate-200 flex items-center justify-center text-[8px] font-black">{task.assignee.charAt(0)}</div>{task.assignee}</p></div>
                 </div>

@@ -5,7 +5,7 @@ import { MemberView } from './components/MemberView';
 import { LeadView } from './components/LeadView';
 import { CompletedView } from './components/CompletedView';
 import { TeamView } from './components/TeamView';
-import { Task, TeamMember } from './types';
+import { Task, TeamMember, HealthStatus } from './types';
 
 const INITIAL_MEMBERS: TeamMember[] = ['Akhilesh', 'Pravallika', 'Chandu', 'Sharanya'];
 
@@ -14,10 +14,12 @@ const INITIAL_TASKS: Task[] = [
     id: 'demo-task-1',
     title: 'Landing Page Responsive Fixes',
     project: 'Q3 UI Refresh',
+    sprint: 'Sprint 24.1',
     category: 'General',
     assignee: 'Akhilesh',
     startDate: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
     targetDate: new Date(Date.now() + 3 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
+    healthStatus: 'On Track',
     updates: [
       {
         date: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000).toISOString(),
@@ -94,7 +96,6 @@ const App: React.FC = () => {
   };
 
   const handleLogout = () => {
-    // Instant logout for smoother experience
     setRole(null);
     setPasscode('');
     setView('dashboard');
@@ -133,6 +134,11 @@ const App: React.FC = () => {
       }
       return t;
     }));
+  };
+
+  const handleUpdateHealth = (taskId: string, health: HealthStatus) => {
+    if (role !== 'private') return;
+    setTasks(prev => prev.map(t => t.id === taskId ? { ...t, healthStatus: health } : t));
   };
 
   const addMember = (name: string) => setTeamMembers(prev => [...prev, name]);
@@ -176,11 +182,12 @@ const App: React.FC = () => {
   };
 
   const exportToExcel = () => {
-    const headers = ['Project', 'Task Title', 'Assignee', 'Start Date', 'Target Date', 'Progress', 'Status', 'Last Update Work', 'Blockers'];
+    const headers = ['Project', 'Sprint', 'Task Title', 'Assignee', 'Start Date', 'Target Date', 'Progress', 'Status', 'Last Update Work', 'Blockers', 'Health'];
     const rows = tasks.map(t => {
       const latest = t.updates[t.updates.length - 1];
       return [
         t.project,
+        t.sprint || '',
         t.title,
         t.assignee,
         t.startDate,
@@ -188,7 +195,8 @@ const App: React.FC = () => {
         `${latest?.progress || 0}%`,
         latest?.status || 'Assigned',
         `"${(latest?.workCompleted || '').replace(/"/g, '""')}"`,
-        `"${(latest?.blockers || '').replace(/"/g, '""')}"`
+        `"${(latest?.blockers || '').replace(/"/g, '""')}"`,
+        t.healthStatus || 'Not Set'
       ];
     });
 
@@ -200,51 +208,6 @@ const App: React.FC = () => {
     link.setAttribute('download', `workspace_report_${new Date().toISOString().split('T')[0]}.csv`);
     link.click();
   };
-
-  if (!role) {
-    return (
-      <div className="min-h-screen bg-slate-900 flex items-center justify-center p-6 relative overflow-hidden font-sans antialiased">
-        <div className="absolute top-0 left-0 w-full h-full bg-[radial-gradient(circle_at_50%_50%,rgba(59,130,246,0.1),transparent_50%)]"></div>
-        <div className="w-full max-w-md relative z-10">
-          <div className="flex flex-col items-center mb-10 text-center">
-            <div className="w-16 h-16 bg-gradient-to-br from-blue-400 to-blue-600 rounded-2xl flex items-center justify-center text-3xl font-black text-white shadow-2xl shadow-blue-500/20 mb-6">WS</div>
-            <h1 className="text-3xl font-black text-white tracking-tight mb-2">Work Space</h1>
-            <p className="text-slate-400 text-sm font-medium">Internal Workspace Authorization</p>
-          </div>
-
-          <form onSubmit={handleLogin} className="bg-white/5 backdrop-blur-xl border border-white/10 p-10 rounded-[2.5rem] shadow-2xl space-y-6">
-            <div>
-              <label className="block text-[10px] font-black text-slate-500 uppercase tracking-[0.2em] mb-3 ml-1">Secure Passcode</label>
-              <input 
-                type="password" 
-                autoFocus
-                placeholder="••••••••"
-                className="w-full bg-slate-800/50 border border-white/5 rounded-2xl px-6 py-4 text-white font-bold placeholder:text-slate-600 outline-none focus:ring-2 focus:ring-blue-500/50 transition-all text-center tracking-widest disabled:opacity-50"
-                value={passcode}
-                onChange={e => setPasscode(e.target.value)}
-                disabled={isVerifying}
-              />
-            </div>
-            <button 
-              type="submit"
-              disabled={isVerifying || !passcode}
-              className="w-full bg-blue-600 text-white font-black uppercase tracking-widest py-5 rounded-2xl shadow-xl shadow-blue-500/10 hover:bg-blue-500 transition-all active:scale-[0.98] flex items-center justify-center gap-3 disabled:bg-slate-700 disabled:shadow-none"
-            >
-              {isVerifying ? (
-                <>
-                  <i className="fa-solid fa-circle-notch animate-spin"></i>
-                  Verifying...
-                </>
-              ) : 'Verify Access'}
-            </button>
-            <div className="pt-4 text-center">
-              <p className="text-[10px] text-slate-500 font-bold uppercase tracking-widest">Secured by AES-256 Local Storage</p>
-            </div>
-          </form>
-        </div>
-      </div>
-    );
-  }
 
   const activeTasks = tasks.filter(t => t.updates[t.updates.length - 1]?.status !== 'Completed');
 
@@ -306,7 +269,7 @@ const App: React.FC = () => {
           >
             <div className="flex items-center gap-3">
               <i className="fa-solid fa-layer-group"></i>
-              <span className="font-semibold text-sm">Tasks Archive</span>
+              <span className="font-semibold text-sm">Tasks</span>
             </div>
             {tasks.length > 0 && (
               <span className="bg-white/20 text-[10px] font-bold px-2 py-0.5 rounded-full">{tasks.length}</span>
@@ -361,7 +324,7 @@ const App: React.FC = () => {
       </aside>
 
       <main className="flex-1 h-screen overflow-y-auto p-4 md:p-8 bg-[#f8fafc]">
-        {view === 'dashboard' && <Dashboard tasks={activeTasks} teamMembers={teamMembers} onAddComment={addComment} onDeleteTask={deleteTask} isReadOnly={role !== 'private'} />}
+        {view === 'dashboard' && <Dashboard tasks={activeTasks} teamMembers={teamMembers} onAddComment={addComment} onDeleteTask={deleteTask} onUpdateHealth={handleUpdateHealth} isReadOnly={role !== 'private'} />}
         {view === 'lead' && role === 'private' && <LeadView teamMembers={teamMembers} onAddTask={addTask} />}
         {view === 'team' && role === 'private' && <TeamView teamMembers={teamMembers} onAddMember={addMember} onRemoveMember={removeMember} />}
         {view === 'member' && <MemberView tasks={tasks} teamMembers={teamMembers} onAddUpdate={addUpdate} />}
