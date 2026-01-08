@@ -1,4 +1,5 @@
-# 🚀 TrackJS - Frontend Task Tracker
+
+# 🚀 Work Space - Frontend Task Tracker
 
 A sleek, high-performance internal tool for frontend teams to monitor daily task progress, manage EOD (End of Day) reporting, and analyze team health.
 
@@ -18,22 +19,22 @@ A sleek, high-performance internal tool for frontend teams to monitor daily task
 To host this tool for free on **GitHub Pages**, follow these steps:
 
 ### Option A: Manual Upload (Fastest)
-1. Create a new repository on GitHub named `trackjs`.
+1. Create a new repository on GitHub named `workspace-task-tool`.
 2. Open your repository on GitHub.com and click **"uploading an existing file"**.
 3. Drag and drop all files from this project into the browser.
 4. Go to **Settings > Pages**.
 5. Under "Branch", select `main` (or `master`) and `/ (root)`. Click **Save**.
-6. Your site will be live at `https://<your-username>.github.io/trackjs/` in a few minutes!
+6. Your site will be live at `https://<your-username>.github.io/workspace-task-tool/` in a few minutes!
 
 ### Option B: Using Git CLI
 ```bash
 # Initialize the repository
 git init
 git add .
-git commit -m "Initial commit: TrackJS Engine"
+git commit -m "Initial commit: Work Space"
 
 # Link to your GitHub repo
-git remote add origin https://github.com/YOUR_USERNAME/trackjs.git
+git remote add origin https://github.com/YOUR_USERNAME/workspace-task-tool.git
 git branch -M main
 git push -u origin main
 ```

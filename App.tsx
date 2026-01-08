@@ -37,7 +37,7 @@ type UserRole = 'private' | 'public' | null;
 const App: React.FC = () => {
   const [view, setView] = useState<'dashboard' | 'lead' | 'member' | 'completed' | 'team'>('dashboard');
   const [role, setRole] = useState<UserRole>(() => {
-    const savedRole = localStorage.getItem('trackjs_role');
+    const savedRole = localStorage.getItem('workspace_role');
     return (savedRole === 'private' || savedRole === 'public') ? savedRole : null;
   });
   const [passcode, setPasscode] = useState('');
@@ -45,13 +45,13 @@ const App: React.FC = () => {
   const fileInputRef = useRef<HTMLInputElement>(null);
   
   const [teamMembers, setTeamMembers] = useState<TeamMember[]>(() => {
-    const saved = localStorage.getItem('trackjs_team_v1');
+    const saved = localStorage.getItem('workspace_team_v1');
     return saved ? JSON.parse(saved) : INITIAL_MEMBERS;
   });
 
   const [tasks, setTasks] = useState<Task[]>(() => {
     try {
-      const saved = localStorage.getItem('trackjs_tasks_v1');
+      const saved = localStorage.getItem('workspace_tasks_v1');
       return saved ? JSON.parse(saved) : INITIAL_TASKS;
     } catch (e) {
       console.error("Failed to parse local storage", e);
@@ -60,18 +60,18 @@ const App: React.FC = () => {
   });
 
   useEffect(() => {
-    localStorage.setItem('trackjs_tasks_v1', JSON.stringify(tasks));
+    localStorage.setItem('workspace_tasks_v1', JSON.stringify(tasks));
   }, [tasks]);
 
   useEffect(() => {
-    localStorage.setItem('trackjs_team_v1', JSON.stringify(teamMembers));
+    localStorage.setItem('workspace_team_v1', JSON.stringify(teamMembers));
   }, [teamMembers]);
 
   useEffect(() => {
     if (role) {
-      localStorage.setItem('trackjs_role', role);
+      localStorage.setItem('workspace_role', role);
     } else {
-      localStorage.removeItem('trackjs_role');
+      localStorage.removeItem('workspace_role');
     }
   }, [role]);
 
@@ -94,11 +94,11 @@ const App: React.FC = () => {
   };
 
   const handleLogout = () => {
-    // Instant logout for smoother experience as requested
+    // Instant logout for smoother experience
     setRole(null);
     setPasscode('');
     setView('dashboard');
-    localStorage.removeItem('trackjs_role');
+    localStorage.removeItem('workspace_role');
   };
 
   const addTask = (task: Task) => setTasks(prev => [...prev, task]);
@@ -145,7 +145,7 @@ const App: React.FC = () => {
   const exportToJSON = () => {
     const dataStr = JSON.stringify({ tasks, teamMembers }, null, 2);
     const dataUri = 'data:application/json;charset=utf-8,'+ encodeURIComponent(dataStr);
-    const exportFileDefaultName = `trackjs_full_backup_${new Date().toISOString().split('T')[0]}.json`;
+    const exportFileDefaultName = `workspace_full_backup_${new Date().toISOString().split('T')[0]}.json`;
 
     const linkElement = document.createElement('a');
     linkElement.setAttribute('href', dataUri);
@@ -197,7 +197,7 @@ const App: React.FC = () => {
     const url = URL.createObjectURL(blob);
     const link = document.createElement('a');
     link.setAttribute('href', url);
-    link.setAttribute('download', `trackjs_report_${new Date().toISOString().split('T')[0]}.csv`);
+    link.setAttribute('download', `workspace_report_${new Date().toISOString().split('T')[0]}.csv`);
     link.click();
   };
 
@@ -207,8 +207,8 @@ const App: React.FC = () => {
         <div className="absolute top-0 left-0 w-full h-full bg-[radial-gradient(circle_at_50%_50%,rgba(59,130,246,0.1),transparent_50%)]"></div>
         <div className="w-full max-w-md relative z-10">
           <div className="flex flex-col items-center mb-10 text-center">
-            <div className="w-16 h-16 bg-gradient-to-br from-blue-400 to-blue-600 rounded-2xl flex items-center justify-center text-3xl font-black text-white shadow-2xl shadow-blue-500/20 mb-6">JS</div>
-            <h1 className="text-3xl font-black text-white tracking-tight mb-2">TrackJS Engine</h1>
+            <div className="w-16 h-16 bg-gradient-to-br from-blue-400 to-blue-600 rounded-2xl flex items-center justify-center text-3xl font-black text-white shadow-2xl shadow-blue-500/20 mb-6">WS</div>
+            <h1 className="text-3xl font-black text-white tracking-tight mb-2">Work Space</h1>
             <p className="text-slate-400 text-sm font-medium">Internal Workspace Authorization</p>
           </div>
 
@@ -252,9 +252,9 @@ const App: React.FC = () => {
     <div className="flex flex-col md:flex-row min-h-screen bg-gray-50 font-sans text-slate-900 antialiased">
       <aside className="w-full md:w-64 bg-slate-900 text-white p-6 flex flex-col shadow-2xl z-20 max-h-screen overflow-y-auto">
         <div className="flex items-center gap-3 mb-10">
-          <div className="w-10 h-10 bg-gradient-to-br from-blue-400 to-blue-600 rounded-xl flex items-center justify-center text-xl font-black shadow-lg shadow-blue-500/20">JS</div>
+          <div className="w-10 h-10 bg-gradient-to-br from-blue-400 to-blue-600 rounded-xl flex items-center justify-center text-xl font-black shadow-lg shadow-blue-500/20">WS</div>
           <div>
-            <h1 className="text-xl font-bold tracking-tight">TrackJS</h1>
+            <h1 className="text-xl font-bold tracking-tight">Work Space</h1>
             <div className={`text-[8px] font-black uppercase tracking-[0.15em] px-1.5 py-0.5 rounded inline-block ${role === 'private' ? 'bg-indigo-500/20 text-indigo-300' : 'bg-emerald-500/20 text-emerald-300'}`}>
               {role === 'private' ? 'Command/Lead' : 'Public/Member'}
             </div>
