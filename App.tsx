@@ -251,7 +251,7 @@ const App: React.FC = () => {
       {toasts.map(toast => (
         <div 
           key={toast.id} 
-          className={`pointer-events-auto min-w-[320px] px-6 py-4 rounded-2xl shadow-2xl border flex items-center gap-4 transition-all duration-500 transform animate-in slide-in-from-right-full fade-in zoom-in-95 ${
+          className={`pointer-events-auto min-w-[320px] px-6 py-4 rounded-xl shadow-2xl border flex items-center gap-4 transition-all duration-500 transform animate-in slide-in-from-right-full fade-in zoom-in-95 ${
             toast.type === 'success' ? 'bg-emerald-50 border-emerald-100 text-emerald-900' :
             toast.type === 'error' ? 'bg-red-50 border-red-100 text-red-900' :
             'bg-slate-900 border-slate-800 text-white'
@@ -285,18 +285,18 @@ const App: React.FC = () => {
       <div className="min-h-screen bg-slate-900 flex items-center justify-center p-6 antialiased font-sans">
         <div className="max-w-md w-full animate-in fade-in zoom-in duration-500">
           <div className="flex flex-col items-center mb-10">
-            <div className="w-16 h-16 bg-gradient-to-br from-blue-400 to-blue-600 rounded-2xl flex items-center justify-center text-3xl font-black text-white shadow-2xl shadow-blue-500/20 mb-4">WS</div>
+            <div className="w-16 h-16 bg-gradient-to-br from-blue-400 to-blue-600 rounded-xl flex items-center justify-center text-3xl font-black text-white shadow-2xl shadow-blue-500/20 mb-4">WS</div>
             <h1 className="text-3xl font-black text-white tracking-tight">Work Space</h1>
             <p className="text-slate-400 font-medium italic mt-1">Task Tracker</p>
           </div>
           
-          <form onSubmit={handleLogin} className="bg-white p-10 rounded-[2.5rem] shadow-2xl space-y-8">
+          <form onSubmit={handleLogin} className="bg-white p-10 rounded-xl shadow-2xl space-y-8">
             <div>
               <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-3">Enter Passcode</label>
               <input 
                 type="password" 
                 placeholder="Enter" 
-                className="w-full bg-slate-50 border border-slate-200 rounded-2xl px-6 py-5 outline-none font-bold text-slate-800 text-center tracking-widest focus:ring-4 focus:ring-blue-500/10 focus:border-blue-400 transition-all text-xl"
+                className="w-full bg-slate-50 border border-slate-200 rounded-xl px-6 py-5 outline-none font-bold text-slate-800 text-center tracking-widest focus:ring-4 focus:ring-blue-500/10 focus:border-blue-400 transition-all text-xl"
                 value={passcode}
                 onChange={(e) => setPasscode(e.target.value)}
                 autoFocus
@@ -306,7 +306,7 @@ const App: React.FC = () => {
             <button 
               type="submit" 
               disabled={isVerifying}
-              className={`w-full bg-slate-900 text-white font-black uppercase tracking-widest py-5 rounded-2xl shadow-xl transition-all flex items-center justify-center gap-3 active:scale-95 ${isVerifying ? 'opacity-50 cursor-not-allowed' : 'hover:bg-black'}`}
+              className={`w-full bg-slate-900 text-white font-black uppercase tracking-widest py-5 rounded-xl shadow-xl transition-all flex items-center justify-center gap-3 active:scale-95 ${isVerifying ? 'opacity-50 cursor-not-allowed' : 'hover:bg-black'}`}
             >
               {isVerifying ? 'Verifying...' : 'Unlock Workspace'}
             </button>
@@ -321,7 +321,7 @@ const App: React.FC = () => {
     <div className="flex flex-col md:flex-row min-h-screen bg-gray-50 font-sans text-slate-900 antialiased relative">
       <aside className="w-full md:w-64 bg-slate-900 text-white p-6 flex flex-col shadow-2xl z-20 max-h-screen overflow-y-auto">
         <div className="flex items-center gap-3 mb-10">
-          <div className="w-10 h-10 bg-gradient-to-br from-blue-400 to-blue-600 rounded-xl flex items-center justify-center text-xl font-black shadow-lg shadow-blue-500/20">WS</div>
+          <div className="w-10 h-10 bg-gradient-to-br from-blue-400 to-blue-600 rounded-lg flex items-center justify-center text-xl font-black shadow-lg shadow-blue-500/20">WS</div>
           <div>
             <h1 className="text-xl font-bold tracking-tight">Work Space</h1>
             <div className={`text-[8px] font-black uppercase tracking-[0.15em] px-1.5 py-0.5 rounded inline-block ${role === 'private' ? 'bg-indigo-500/20 text-indigo-300' : 'bg-emerald-500/20 text-emerald-300'}`}>
@@ -333,7 +333,7 @@ const App: React.FC = () => {
         <nav className="flex-1 space-y-2">
           <button 
             onClick={() => setView('dashboard')}
-            className={`w-full flex items-center justify-between px-4 py-3 rounded-xl transition-all duration-200 ${view === 'dashboard' ? 'bg-blue-600 shadow-lg shadow-blue-600/30 text-white' : 'hover:bg-slate-800 text-slate-400 hover:text-white'}`}
+            className={`w-full flex items-center justify-between px-4 py-3 rounded-lg transition-all duration-200 ${view === 'dashboard' ? 'bg-blue-600 shadow-lg shadow-blue-600/30 text-white' : 'hover:bg-slate-800 text-slate-400 hover:text-white'}`}
           >
             <div className="flex items-center gap-3">
               <i className="fa-solid fa-chart-pie"></i>
@@ -345,15 +345,15 @@ const App: React.FC = () => {
             <>
               <button 
                 onClick={() => setView('lead')}
-                className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200 ${view === 'lead' ? 'bg-blue-600 shadow-lg shadow-blue-600/30 text-white' : 'hover:bg-slate-800 text-slate-400 hover:text-white'}`}
+                className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-200 ${view === 'lead' ? 'bg-blue-600 shadow-lg shadow-blue-600/30 text-white' : 'hover:bg-slate-800 text-slate-400 hover:text-white'}`}
               >
-                <i className="fa-solid fa-plus-circle"></i>
+                <i className="fa-solid fa-circle-plus"></i>
                 <span className="font-semibold text-sm">Assign Tasks</span>
               </button>
 
               <button 
                 onClick={() => setView('team')}
-                className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200 ${view === 'team' ? 'bg-blue-600 shadow-lg shadow-blue-600/30 text-white' : 'hover:bg-slate-800 text-slate-400 hover:text-white'}`}
+                className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-200 ${view === 'team' ? 'bg-blue-600 shadow-lg shadow-blue-600/30 text-white' : 'hover:bg-slate-800 text-slate-400 hover:text-white'}`}
               >
                 <i className="fa-solid fa-users-gear"></i>
                 <span className="font-semibold text-sm">Manage Team</span>
@@ -363,15 +363,15 @@ const App: React.FC = () => {
           
           <button 
             onClick={() => setView('member')}
-            className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200 ${view === 'member' ? 'bg-blue-600 shadow-lg shadow-blue-600/30 text-white' : 'hover:bg-slate-800 text-slate-400 hover:text-white'}`}
+            className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-200 ${view === 'member' ? 'bg-blue-600 shadow-lg shadow-blue-600/30 text-white' : 'hover:bg-slate-800 text-slate-400 hover:text-white'}`}
           >
-            <i className="fa-solid fa-user-circle"></i>
+            <i className="fa-solid fa-circle-user"></i>
             <span className="font-semibold text-sm">Member Portal</span>
           </button>
 
           <button 
             onClick={() => setView('completed')}
-            className={`w-full flex items-center justify-between px-4 py-3 rounded-xl transition-all duration-200 ${view === 'completed' ? 'bg-slate-700 shadow-lg text-white' : 'hover:bg-slate-800 text-slate-400 hover:text-white'}`}
+            className={`w-full flex items-center justify-between px-4 py-3 rounded-lg transition-all duration-200 ${view === 'completed' ? 'bg-slate-700 shadow-lg text-white' : 'hover:bg-slate-800 text-slate-400 hover:text-white'}`}
           >
             <div className="flex items-center gap-3">
               <i className="fa-solid fa-layer-group"></i>
@@ -410,7 +410,7 @@ const App: React.FC = () => {
         <div className="mt-auto pt-6 border-t border-slate-800">
           <button 
             onClick={handleLogout}
-            className="w-full flex items-center gap-3 px-4 py-3 text-slate-500 hover:text-red-400 hover:bg-red-400/10 rounded-xl transition-all group"
+            className="w-full flex items-center gap-3 px-4 py-3 text-slate-500 hover:text-red-400 hover:bg-red-400/10 rounded-lg transition-all group"
           >
             <i className="fa-solid fa-right-from-bracket"></i>
             <span className="font-bold text-xs uppercase tracking-widest">Logout</span>

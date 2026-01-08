@@ -32,19 +32,19 @@ export const TeamView: React.FC<TeamViewProps> = ({ teamMembers, onAddMember, on
       </header>
 
       <div className="space-y-6">
-        <form onSubmit={handleSubmit} className="bg-white p-8 rounded-3xl shadow-xl shadow-slate-200/50 border border-slate-200">
+        <form onSubmit={handleSubmit} className="bg-white p-8 rounded-xl shadow-xl shadow-slate-200/50 border border-slate-200">
           <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-3">Add Member</label>
           <div className="flex gap-4">
             <input 
               type="text" 
               placeholder="Enter" 
-              className="flex-1 bg-slate-50 border border-slate-200 rounded-2xl px-5 py-4 outline-none font-bold text-slate-800 focus:ring-2 focus:ring-blue-500/20 transition-all"
+              className="flex-1 bg-slate-50 border border-slate-200 rounded-lg px-5 py-4 outline-none font-bold text-slate-800 focus:ring-2 focus:ring-blue-500/20 transition-all"
               value={newName}
               onChange={(e) => setNewName(e.target.value)}
             />
             <button 
               type="submit"
-              className="bg-blue-600 text-white font-black uppercase tracking-widest px-8 rounded-2xl hover:bg-blue-700 transition-all shadow-lg shadow-blue-500/20 active:scale-95 flex items-center gap-2"
+              className="bg-blue-600 text-white font-black uppercase tracking-widest px-8 rounded-lg hover:bg-blue-700 transition-all shadow-lg shadow-blue-500/20 active:scale-95 flex items-center gap-2"
             >
               <i className="fa-solid fa-plus"></i>
               Add
@@ -52,7 +52,7 @@ export const TeamView: React.FC<TeamViewProps> = ({ teamMembers, onAddMember, on
           </div>
         </form>
 
-        <div className="bg-white rounded-3xl border border-slate-200 overflow-hidden">
+        <div className="bg-white rounded-xl border border-slate-200 overflow-hidden">
           <div className="p-6 border-b border-slate-100 bg-slate-50/50">
              <h3 className="text-sm font-black text-slate-800 uppercase tracking-tight">Active Roster ({teamMembers.length})</h3>
           </div>
@@ -71,7 +71,7 @@ export const TeamView: React.FC<TeamViewProps> = ({ teamMembers, onAddMember, on
                 {member !== 'Akhilesh' && (
                   <button 
                     onClick={() => onRemoveMember(member)}
-                    className="p-2 text-slate-300 hover:text-red-500 hover:bg-red-50 rounded-xl transition-all opacity-0 group-hover:opacity-100"
+                    className="p-2 text-slate-300 hover:text-red-500 hover:bg-red-50 rounded-lg transition-all opacity-0 group-hover:opacity-100"
                   >
                     <i className="fa-solid fa-user-minus"></i>
                   </button>

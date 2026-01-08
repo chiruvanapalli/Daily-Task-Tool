@@ -71,14 +71,14 @@ export const LeadView: React.FC<LeadViewProps> = ({ teamMembers, onAddTask, show
         <p className="text-slate-500 font-medium italic">Define workstreams</p>
       </header>
 
-      <form onSubmit={handleSubmit} className="bg-white p-10 rounded-3xl shadow-xl shadow-slate-200/50 border border-slate-200 space-y-8">
+      <form onSubmit={handleSubmit} className="bg-white p-10 rounded-xl shadow-xl shadow-slate-200/50 border border-slate-200 space-y-8">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div>
             <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">Project Entity</label>
             <input 
               type="text" 
               placeholder="Enter"
-              className="w-full bg-slate-50 border border-slate-200 rounded-2xl px-5 py-4 outline-none font-bold text-slate-800 focus:ring-2 focus:ring-blue-500/20 transition-all"
+              className="w-full bg-slate-50 border border-slate-200 rounded-lg px-5 py-4 outline-none font-bold text-slate-800 focus:ring-2 focus:ring-blue-500/20 transition-all"
               value={formData.project}
               onChange={e => setFormData({...formData, project: e.target.value})}
               required
@@ -89,7 +89,7 @@ export const LeadView: React.FC<LeadViewProps> = ({ teamMembers, onAddTask, show
             <input 
               type="text" 
               placeholder="Enter"
-              className="w-full bg-slate-50 border border-slate-200 rounded-2xl px-5 py-4 outline-none font-bold text-slate-800 focus:ring-2 focus:ring-blue-500/20 transition-all"
+              className="w-full bg-slate-50 border border-slate-200 rounded-lg px-5 py-4 outline-none font-bold text-slate-800 focus:ring-2 focus:ring-blue-500/20 transition-all"
               value={formData.sprint}
               onChange={e => setFormData({...formData, sprint: e.target.value})}
             />
@@ -104,7 +104,7 @@ export const LeadView: React.FC<LeadViewProps> = ({ teamMembers, onAddTask, show
                   key={cat.value}
                   type="button"
                   onClick={() => setFormData({...formData, category: cat.value})}
-                  className={`flex items-center gap-2 px-3 py-3 rounded-xl border text-xs font-bold transition-all ${formData.category === cat.value ? 'bg-slate-900 text-white border-slate-900' : 'bg-slate-50 text-slate-500 border-slate-100 hover:border-slate-300'}`}
+                  className={`flex items-center gap-2 px-3 py-3 rounded-lg border text-xs font-bold transition-all ${formData.category === cat.value ? 'bg-slate-900 text-white border-slate-900' : 'bg-slate-50 text-slate-500 border-slate-100 hover:border-slate-300'}`}
                 >
                   <i className={`fa-solid ${cat.icon} ${formData.category === cat.value ? 'text-blue-400' : 'opacity-40'}`}></i>
                   {cat.value}
@@ -118,7 +118,7 @@ export const LeadView: React.FC<LeadViewProps> = ({ teamMembers, onAddTask, show
           <input 
             type="text" 
             placeholder="Enter"
-            className="w-full bg-slate-50 border border-slate-200 rounded-2xl px-5 py-4 outline-none font-bold text-slate-800 focus:ring-2 focus:ring-blue-500/20 transition-all"
+            className="w-full bg-slate-50 border border-slate-200 rounded-lg px-5 py-4 outline-none font-bold text-slate-800 focus:ring-2 focus:ring-blue-500/20 transition-all"
             value={formData.title}
             onChange={e => setFormData({...formData, title: e.target.value})}
             required
@@ -131,7 +131,7 @@ export const LeadView: React.FC<LeadViewProps> = ({ teamMembers, onAddTask, show
             <button 
               type="button"
               onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-              className="w-full flex items-center justify-between px-5 py-4 bg-slate-50 border border-slate-200 rounded-2xl hover:border-blue-400 transition-all group"
+              className="w-full flex items-center justify-between px-5 py-4 bg-slate-50 border border-slate-200 rounded-lg hover:border-blue-400 transition-all group"
             >
               <span className="flex items-center gap-3">
                 <div className="w-6 h-6 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 text-[10px] font-black">
@@ -143,7 +143,7 @@ export const LeadView: React.FC<LeadViewProps> = ({ teamMembers, onAddTask, show
             </button>
 
             {isDropdownOpen && (
-              <div className="absolute left-0 mt-2 w-full bg-white border border-slate-100 rounded-2xl shadow-2xl z-[70] py-2 overflow-hidden animate-in fade-in zoom-in-95 duration-200">
+              <div className="absolute left-0 mt-2 w-full bg-white border border-slate-100 rounded-xl shadow-2xl z-[70] py-2 overflow-hidden animate-in fade-in zoom-in-95 duration-200 border-t-4 border-t-slate-800">
                 {teamMembers.map(member => (
                   <button 
                     key={member}
@@ -167,7 +167,7 @@ export const LeadView: React.FC<LeadViewProps> = ({ teamMembers, onAddTask, show
             <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">Start Date</label>
             <input 
               type="date" 
-              className="w-full bg-slate-50 border border-slate-200 rounded-2xl px-5 py-4 outline-none font-bold text-slate-700 focus:ring-2 focus:ring-blue-500/20 transition-all"
+              className="w-full bg-slate-50 border border-slate-200 rounded-lg px-5 py-4 outline-none font-bold text-slate-700 focus:ring-2 focus:ring-blue-500/20 transition-all"
               value={formData.startDate}
               onChange={e => setFormData({...formData, startDate: e.target.value})}
             />
@@ -178,7 +178,7 @@ export const LeadView: React.FC<LeadViewProps> = ({ teamMembers, onAddTask, show
           <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">Deadline</label>
           <input 
             type="date" 
-            className="w-full bg-slate-50 border border-slate-200 rounded-2xl px-5 py-4 outline-none font-bold text-slate-700 focus:ring-2 focus:ring-blue-500/20 transition-all"
+            className="w-full bg-slate-50 border border-slate-200 rounded-lg px-5 py-4 outline-none font-bold text-slate-700 focus:ring-2 focus:ring-blue-500/20 transition-all"
             value={formData.targetDate}
             onChange={e => setFormData({...formData, targetDate: e.target.value})}
             required
@@ -187,7 +187,7 @@ export const LeadView: React.FC<LeadViewProps> = ({ teamMembers, onAddTask, show
 
         <button 
           type="submit"
-          className="w-full bg-blue-600 text-white font-black uppercase tracking-widest py-5 rounded-2xl shadow-xl shadow-blue-500/20 hover:bg-blue-700 transition-all active:scale-95 flex items-center justify-center gap-3"
+          className="w-full bg-blue-600 text-white font-black uppercase tracking-widest py-5 rounded-lg shadow-xl shadow-blue-500/20 hover:bg-blue-700 transition-all active:scale-95 flex items-center justify-center gap-3"
         >
           <i className="fa-solid fa-paper-plane"></i>
           Deploy Assignment

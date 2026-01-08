@@ -92,7 +92,7 @@ export const MemberView: React.FC<MemberViewProps> = ({ tasks, teamMembers, onAd
         <div className="relative z-[100]" ref={userDropdownRef}>
           <button 
             onClick={() => setIsUserDropdownOpen(!isUserDropdownOpen)}
-            className="flex items-center gap-3 px-5 py-2.5 bg-white border border-slate-200 rounded-2xl hover:border-blue-400 hover:shadow-lg transition-all min-w-[220px] group"
+            className="flex items-center gap-3 px-5 py-2.5 bg-white border border-slate-200 rounded-xl hover:border-blue-400 hover:shadow-lg transition-all min-w-[220px] group"
           >
             <div className="w-8 h-8 rounded-full bg-blue-50 flex items-center justify-center text-blue-600 text-xs font-black">
               {selectedUser ? selectedUser.charAt(0) : '?'}
@@ -105,7 +105,7 @@ export const MemberView: React.FC<MemberViewProps> = ({ tasks, teamMembers, onAd
           </button>
 
           {isUserDropdownOpen && (
-            <div className="absolute right-0 mt-2 w-full bg-white border border-slate-100 rounded-2xl shadow-2xl z-[100] py-2 overflow-hidden animate-in fade-in zoom-in-95 duration-200 border-t-4 border-t-blue-500">
+            <div className="absolute right-0 mt-2 w-full bg-white border border-slate-100 rounded-xl shadow-2xl z-[100] py-2 overflow-hidden animate-in fade-in zoom-in-95 duration-200 border-t-4 border-t-blue-500">
               {teamMembers.map(member => (
                 <button 
                   key={member}
@@ -130,7 +130,7 @@ export const MemberView: React.FC<MemberViewProps> = ({ tasks, teamMembers, onAd
         <section className="lg:col-span-2 space-y-4">
           <h3 className="text-[10px] font-black text-slate-400 uppercase tracking-widest px-1">Your Tasks</h3>
           {myTasks.length === 0 ? (
-            <div className="bg-white p-8 rounded-3xl border border-slate-200 text-center">
+            <div className="bg-white p-8 rounded-xl border border-slate-200 text-center">
                <i className="fa-solid fa-mug-hot text-slate-200 text-2xl mb-3"></i>
                <p className="text-slate-400 text-sm italic font-medium">No tasks assigned.</p>
             </div>
@@ -139,7 +139,7 @@ export const MemberView: React.FC<MemberViewProps> = ({ tasks, teamMembers, onAd
               <button 
                 key={t.id}
                 onClick={() => setActiveTask(t.id)}
-                className={`w-full text-left p-6 rounded-3xl border transition-all duration-300 ${activeTask === t.id ? 'bg-slate-900 text-white border-slate-900 shadow-xl shadow-slate-200 -translate-y-1' : 'bg-white border-slate-200 hover:border-blue-400 shadow-sm text-slate-700'}`}
+                className={`w-full text-left p-6 rounded-xl border transition-all duration-300 ${activeTask === t.id ? 'bg-slate-900 text-white border-slate-900 shadow-xl shadow-slate-200 -translate-y-1' : 'bg-white border-slate-200 hover:border-blue-400 shadow-sm text-slate-700'}`}
               >
                 <div className="flex justify-between items-start">
                   <div>
@@ -162,7 +162,7 @@ export const MemberView: React.FC<MemberViewProps> = ({ tasks, teamMembers, onAd
 
         <section className="lg:col-span-3">
           {activeTask ? (
-            <form onSubmit={handleSubmit} className="bg-white p-8 rounded-3xl border border-slate-200 shadow-xl shadow-slate-200/50 space-y-6 relative overflow-hidden">
+            <form onSubmit={handleSubmit} className="bg-white p-8 rounded-xl border border-slate-200 shadow-xl shadow-slate-200/50 space-y-6 relative overflow-hidden">
               <div className="absolute top-0 left-0 w-full h-1.5 bg-blue-500"></div>
               <h3 className="text-xl font-black text-slate-900 mb-2">EOD Report</h3>
               
@@ -172,7 +172,7 @@ export const MemberView: React.FC<MemberViewProps> = ({ tasks, teamMembers, onAd
                   <button 
                     type="button"
                     onClick={() => setIsStatusDropdownOpen(!isStatusDropdownOpen)}
-                    className="w-full flex items-center justify-between px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl hover:border-blue-400 transition-all text-left"
+                    className="w-full flex items-center justify-between px-4 py-3 bg-slate-50 border border-slate-200 rounded-lg hover:border-blue-400 transition-all text-left"
                   >
                     <span className="flex items-center gap-3">
                       <i className={`fa-solid ${statusOptions.find(o => o.value === updateForm.status)?.icon} ${statusOptions.find(o => o.value === updateForm.status)?.color} text-xs`}></i>
@@ -205,7 +205,7 @@ export const MemberView: React.FC<MemberViewProps> = ({ tasks, teamMembers, onAd
                    <input 
                     type="range" 
                     min="0" max="100" 
-                    className="w-full h-8 mt-1 bg-slate-100 rounded-xl appearance-none cursor-pointer accent-blue-600 px-2"
+                    className="w-full h-8 mt-1 bg-slate-100 rounded-lg appearance-none cursor-pointer accent-blue-600 px-2"
                     value={updateForm.progress}
                     onChange={e => setUpdateForm({...updateForm, progress: parseInt(e.target.value)})}
                   />
@@ -215,7 +215,7 @@ export const MemberView: React.FC<MemberViewProps> = ({ tasks, teamMembers, onAd
               <div>
                 <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">Work Completed</label>
                 <textarea 
-                  className="w-full bg-slate-50 border border-slate-200 rounded-xl p-4 text-sm font-medium focus:ring-2 focus:ring-blue-500/20 outline-none h-28 leading-relaxed"
+                  className="w-full bg-slate-50 border border-slate-200 rounded-lg p-4 text-sm font-medium focus:ring-2 focus:ring-blue-500/20 outline-none h-28 leading-relaxed"
                   placeholder="Enter"
                   value={updateForm.workCompleted}
                   onChange={e => setUpdateForm({...updateForm, workCompleted: e.target.value})}
@@ -226,7 +226,7 @@ export const MemberView: React.FC<MemberViewProps> = ({ tasks, teamMembers, onAd
               <div>
                 <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">Pending Items</label>
                 <textarea 
-                  className="w-full bg-slate-50 border border-slate-200 rounded-xl p-4 text-sm font-medium focus:ring-2 focus:ring-blue-500/20 outline-none h-20 leading-relaxed"
+                  className="w-full bg-slate-50 border border-slate-200 rounded-lg p-4 text-sm font-medium focus:ring-2 focus:ring-blue-500/20 outline-none h-20 leading-relaxed"
                   placeholder="Enter"
                   value={updateForm.pendingItems}
                   onChange={e => setUpdateForm({...updateForm, pendingItems: e.target.value})}
@@ -237,7 +237,7 @@ export const MemberView: React.FC<MemberViewProps> = ({ tasks, teamMembers, onAd
               <div>
                 <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">Blockers</label>
                 <textarea 
-                  className="w-full bg-slate-50 border border-slate-200 rounded-xl p-4 text-sm font-medium focus:ring-2 focus:ring-red-500/20 outline-none h-24 leading-relaxed border-l-4 border-l-red-100"
+                  className="w-full bg-slate-50 border border-slate-200 rounded-lg p-4 text-sm font-medium focus:ring-2 focus:ring-red-500/20 outline-none h-24 leading-relaxed border-l-4 border-l-red-100"
                   placeholder="Enter"
                   value={updateForm.blockers}
                   onChange={e => setUpdateForm({...updateForm, blockers: e.target.value})}
@@ -248,7 +248,7 @@ export const MemberView: React.FC<MemberViewProps> = ({ tasks, teamMembers, onAd
                 <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">Expected Completion</label>
                 <input 
                   type="date" 
-                  className="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 text-sm font-bold text-slate-700 focus:ring-2 focus:ring-blue-500/20 outline-none"
+                  className="w-full bg-slate-50 border border-slate-200 rounded-lg p-3 text-sm font-bold text-slate-700 focus:ring-2 focus:ring-blue-500/20 outline-none"
                   value={updateForm.expectedCompletionDate}
                   onChange={e => setUpdateForm({...updateForm, expectedCompletionDate: e.target.value})}
                   required
@@ -257,14 +257,14 @@ export const MemberView: React.FC<MemberViewProps> = ({ tasks, teamMembers, onAd
 
               <button 
                 type="submit"
-                className="w-full bg-slate-900 text-white font-black uppercase tracking-widest py-4 rounded-2xl hover:bg-black transition-all shadow-xl active:scale-95 flex items-center justify-center gap-3"
+                className="w-full bg-slate-900 text-white font-black uppercase tracking-widest py-4 rounded-xl hover:bg-black transition-all shadow-xl active:scale-95 flex items-center justify-center gap-3"
               >
                 <i className="fa-solid fa-cloud-upload"></i>
                 Submit EOD Report
               </button>
             </form>
           ) : (
-            <div className="h-full min-h-[400px] flex flex-col items-center justify-center p-12 border-2 border-dashed border-slate-200 rounded-3xl text-slate-400 text-center">
+            <div className="h-full min-h-[400px] flex flex-col items-center justify-center p-12 border-2 border-dashed border-slate-200 rounded-xl text-slate-400 text-center">
               <i className="fa-solid fa-arrow-left text-3xl mb-4 opacity-20"></i>
               <p className="italic font-medium">Select a task to report status.</p>
             </div>
