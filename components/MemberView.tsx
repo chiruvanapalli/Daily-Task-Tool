@@ -1,4 +1,3 @@
-
 import React, { useState, useRef, useEffect } from 'react';
 import { Task, TeamMember, EODUpdate, TaskStatus } from '../types';
 
@@ -18,13 +17,15 @@ export const MemberView: React.FC<MemberViewProps> = ({ tasks, teamMembers, onAd
   const userDropdownRef = useRef<HTMLDivElement>(null);
   const statusDropdownRef = useRef<HTMLDivElement>(null);
   
+  // Fix: Add missing required updatedAt property to the initial state
   const [updateForm, setUpdateForm] = useState<Omit<EODUpdate, 'date'>>({
     progress: 0,
     status: 'In Progress',
     workCompleted: '',
     pendingItems: '',
     blockers: '',
-    expectedCompletionDate: ''
+    expectedCompletionDate: '',
+    updatedAt: 0
   });
 
   useEffect(() => {
@@ -64,13 +65,15 @@ export const MemberView: React.FC<MemberViewProps> = ({ tasks, teamMembers, onAd
       date: new Date().toISOString()
     });
 
+    // Fix: Add missing required updatedAt property to the reset state
     setUpdateForm({
       progress: 0,
       status: 'In Progress',
       workCompleted: '',
       pendingItems: '',
       blockers: '',
-      expectedCompletionDate: ''
+      expectedCompletionDate: '',
+      updatedAt: 0
     });
     setActiveTask(null);
   };

@@ -1,0 +1,22 @@
+
+{
+  "name": "work-space-mongodb-api",
+  "version": "1.0.0",
+  "description": "MongoDB API Backend for Work Space Task Tracker",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node --watch server.js"
+  },
+  "dependencies": {
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.1",
+    "express": "^4.18.2",
+    "mongoose": "^8.1.3"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "author": "Work Space Team",
+  "license": "MIT"
+}

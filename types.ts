@@ -11,6 +11,7 @@ export interface EODUpdate {
   pendingItems: string;
   blockers?: string;
   expectedCompletionDate: string;
+  updatedAt: number; // For sync merging
 }
 
 export interface Task {
@@ -25,6 +26,7 @@ export interface Task {
   updates: EODUpdate[];
   leadComments?: string[];
   healthStatus?: HealthStatus;
+  updatedAt: number; // Global task timestamp
 }
 
 export interface Project {

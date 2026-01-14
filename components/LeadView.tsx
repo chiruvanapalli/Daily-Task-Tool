@@ -1,4 +1,3 @@
-
 import React, { useState, useRef, useEffect } from 'react';
 import { Task, TeamMember, TaskCategory } from '../types';
 
@@ -42,7 +41,9 @@ export const LeadView: React.FC<LeadViewProps> = ({ teamMembers, onAddTask, show
       id: Math.random().toString(36).substr(2, 9),
       ...formData,
       updates: [],
-      healthStatus: undefined
+      healthStatus: undefined,
+      // Fix: Add missing required updatedAt property
+      updatedAt: Date.now()
     };
 
     onAddTask(newTask);
